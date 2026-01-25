@@ -1,0 +1,293 @@
+.game-container {
+    min-height: 100vh;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 2rem;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 1rem;
+}
+
+.board-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 65vh;
+    margin: 0 auto;
+}
+
+.player-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.avatar-sm {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--accent);
+}
+
+.sidebar {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    height: fit-content;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.game-status-card {
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.game-status-card h2 {
+    margin: 0 0 10px 0;
+    color: var(--accent);
+    font-size: 1.4rem;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    color: var(--bg-primary);
+}
+
+.btn-secondary {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+}
+
+.invite-section h3 {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.friend-item {
+    background: var(--bg-primary);
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        padding-top: 1rem;
+    }
+
+    .game-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 0 0.5rem;
+    }
+
+    .board-wrapper {
+        max-width: 100%;
+        gap: 0.5rem;
+    }
+
+    .player-info {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .avatar-row {
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+
+    .avatar-sm {
+        width: 35px;
+        height: 35px;
+    }
+
+    .sidebar {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .game-status-card h2 {
+        font-size: 1.2rem;
+    }
+
+    .controls {
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 10px;
+        font-size: 0.9rem;
+        min-height: 44px;
+    }
+
+    .modal-content {
+        width: 90%;
+        max-width: 350px;
+        padding: 1rem;
+    }
+
+    .modal-content h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .modal-content button {
+        font-size: 1.5rem;
+        padding: 0.75rem;
+        min-width: 60px;
+        min-height: 60px;
+    }
+
+    .moves-section {
+        max-height: 200px;
+        padding: 0.75rem;
+    }
+
+    .friend-item {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .invite-section h3 {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .board-wrapper {
+        max-width: 100%;
+    }
+
+    .sidebar {
+        order: 2;
+    }
+}
+
+@media (max-width: 900px) {
+    .game-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .board-wrapper {
+        max-width: 90vw;
+        margin: 0 auto;
+    }
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    max-width: 500px;
+    width: 100%;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: center;
+}
+
+@media (max-width: 480px) {
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+}

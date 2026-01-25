@@ -1,0 +1,15 @@
+{
+    "name": "cychess-migration",
+    "version": "1.0.0",
+    "description": "User migration script for CyChess",
+    "main": "migrate_users.js",
+    "scripts": {
+        "migrate": "node migrate_users.js"
+    },
+    "dependencies": {
+        "pg": "^8.11.3",
+        "mongoose": "^8.1.0",
+        "bcryptjs": "^2.4.3",
+        "dotenv": "^16.4.1"
+    }
+}
