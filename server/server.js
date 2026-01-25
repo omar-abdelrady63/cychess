@@ -54,7 +54,7 @@ const startServer = async () => {
     try {
         await connectDB();
 
-        server.listen(PORT, () => {
+        server.listen(PORT, '0.0.0.0', () => {
             console.log('='.repeat(60));
             console.log('CyChess Server Started');
             console.log('='.repeat(60));
