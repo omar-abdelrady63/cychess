@@ -22,6 +22,7 @@ const io = new Server(server, {
         credentials: true
     }
 });
+app.options('*', cors());
 
 app.set('io', io);
 
