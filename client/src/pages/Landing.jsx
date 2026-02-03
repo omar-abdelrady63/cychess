@@ -67,7 +67,21 @@ const Landing = () => {
                 <div className="card" style={{ textAlign: 'center' }}>
                     <h3>15 Beautiful Themes</h3>
                     <p style={{ color: 'var(--text-secondary)' }}>
-                        From Ocean Breeze to Midnight Forest—find the perfect look for your board.
+                        From Olive Garden to Fiery Red —find the perfect look for your board.
+                    </p>
+                </div>
+
+                <div className="card" style={{ textAlign: 'center' }}>
+                    <h3>Track Your Progress</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>
+                        Monitor your rating, analyze your win rates, and watch yourself improve over time.
+                    </p>
+                </div>
+
+                <div className="card" style={{ textAlign: 'center' }}>
+                    <h3>Completely Free</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>
+                        No ads, no subscriptions, no paywalls. Just pure chess for everyone, everywhere.
                     </p>
                 </div>
 

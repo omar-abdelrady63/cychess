@@ -155,7 +155,7 @@ cychess/
 
 ## 🎨 Available Themes
 
-Choose from 15 carefully crafted themes:
+Choose from 15 **NEW** carefully crafted themes:
 
 - **Olive Garden** (Default)
 - **Black & Gold**
@@ -169,9 +169,9 @@ Choose from 15 carefully crafted themes:
 - **Ocean Breeze**
 - **Amber Glow**
 - **Lavender Dreams**
-- **Midnight Forest** ✨ NEW
-- **Cherry Blossom** ✨ NEW
-- **Arctic Frost** ✨ NEW
+- **Midnight Forest** 
+- **Cherry Blossom** 
+- **Arctic Frost** 
 
 ## 🤝 Contributing
 
