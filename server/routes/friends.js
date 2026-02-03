@@ -57,7 +57,9 @@ router.get('/search', auth, async (req, res) => {
                 discriminator: user.discriminator,
                 full_name: user.full_name,
                 is_online: user.is_online,
-                status
+                status: user.status,
+                rating: user.rating,
+                friend_status: status
             };
         }));
 
@@ -209,7 +211,9 @@ router.get('/', auth, async (req, res) => {
             username: friend.username,
             discriminator: friend.discriminator,
             full_name: friend.full_name,
-            is_online: friend.is_online
+            is_online: friend.is_online,
+            status: friend.status,
+            rating: friend.rating
         }));
 
         res.json({ friends: friendsData });

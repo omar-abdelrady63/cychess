@@ -1,19 +1,19 @@
 .game-container {
-    min-height: 100vh;
+    min-height: calc(100vh - 80px);
     background-color: var(--bg-primary);
     color: var(--text-primary);
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 2rem;
+    padding-top: 1rem;
     box-sizing: border-box;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .game-grid {
-    display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
     width: 100%;
     max-width: 1200px;
     padding: 0 1rem;
@@ -22,9 +22,9 @@
 .board-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
     width: 100%;
-    max-width: 65vh;
+    max-width: 100%;
     margin: 0 auto;
 }
 
@@ -35,79 +35,93 @@
     background: var(--bg-secondary);
     border: 1px solid var(--bg-tertiary);
     color: var(--text-primary);
-    padding: 10px 15px;
+    padding: 8px 12px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
 }
 
 .avatar-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     font-weight: 600;
-    font-size: 1.1rem;
 }
 
 .avatar-sm {
-    width: 45px;
-    height: 45px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: var(--bg-tertiary);
     border: 2px solid var(--accent);
 }
 
+.timer {
+    padding: 5px 10px;
+    background: #333;
+    color: #fff;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.active-timer {
+    background: #4ade80 !important;
+    color: #000 !important;
+    box-shadow: 0 0 5px #4ade80;
+}
+
 .sidebar {
     background: var(--bg-secondary);
     border: 1px solid var(--bg-tertiary);
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 12px;
-    height: fit-content;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
+    width: 100%;
 }
 
 .game-status-card {
     text-align: center;
-    padding-bottom: 1rem;
+    padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--bg-tertiary);
 }
 
 .game-status-card h2 {
-    margin: 0 0 10px 0;
+    margin: 0 0 5px 0;
     color: var(--accent);
-    font-size: 1.4rem;
+    font-size: 1.2rem;
 }
 
 .controls {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
 }
 
 .btn {
-    padding: 12px;
+    padding: 10px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 0.9rem;
     transition: all 0.2s;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     color: #fff;
+    width: 100%;
 }
 
 .btn:hover {
     opacity: 0.9;
     transform: translateY(-1px);
-}
-
-.btn:active {
-    transform: translateY(0);
 }
 
 .btn-primary {
@@ -125,130 +139,61 @@
     color: white;
 }
 
-.invite-section h3 {
-    color: var(--text-secondary);
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.friend-item {
+.moves-section {
+    max-height: 200px;
+    overflow-y: auto;
     background: var(--bg-primary);
-    padding: 8px;
-    border-radius: 4px;
-    margin-bottom: 5px;
-    color: var(--text-primary);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
 }
 
-@media (max-width: 480px) {
+@media (min-width: 768px) {
     .game-container {
-        padding-top: 1rem;
+        padding-top: 2rem;
     }
 
     .game-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        padding: 0 0.5rem;
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+        align-items: start;
     }
 
     .board-wrapper {
-        max-width: 100%;
-        gap: 0.5rem;
+        max-width: 65vh;
     }
 
     .player-info {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-    }
-
-    .avatar-row {
-        gap: 8px;
-        font-size: 0.95rem;
+        padding: 10px 15px;
+        font-size: 1rem;
     }
 
     .avatar-sm {
-        width: 35px;
-        height: 35px;
+        width: 40px;
+        height: 40px;
     }
 
-    .sidebar {
-        padding: 1rem;
-        gap: 1rem;
-    }
-
-    .game-status-card h2 {
-        font-size: 1.2rem;
+    .avatar-row {
+        gap: 12px;
     }
 
     .controls {
-        gap: 10px;
+        display: flex;
+        flex-direction: column;
     }
 
     .btn {
-        padding: 10px;
-        font-size: 0.9rem;
-        min-height: 44px;
+        padding: 12px;
+        font-size: 1rem;
     }
 
-    .modal-content {
-        width: 90%;
-        max-width: 350px;
-        padding: 1rem;
-    }
-
-    .modal-content h3 {
-        font-size: 1.1rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .modal-content button {
-        font-size: 1.5rem;
-        padding: 0.75rem;
-        min-width: 60px;
-        min-height: 60px;
+    .game-status-card h2 {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
     }
 
     .moves-section {
-        max-height: 200px;
-        padding: 0.75rem;
-    }
-
-    .friend-item {
-        padding: 10px;
-        font-size: 0.9rem;
-    }
-
-    .invite-section h3 {
-        font-size: 0.95rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .game-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-
-    .board-wrapper {
-        max-width: 100%;
-    }
-
-    .sidebar {
-        order: 2;
-    }
-}
-
-@media (max-width: 900px) {
-    .game-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-
-    .board-wrapper {
-        max-width: 90vw;
-        margin: 0 auto;
+        max-height: 300px;
     }
 }
 
@@ -268,11 +213,12 @@
 
 .modal-content {
     background: var(--bg-secondary);
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-xl);
-    max-width: 500px;
+    max-width: 400px;
     width: 100%;
+    text-align: center;
 }
 
 .modal-actions {
@@ -282,12 +228,91 @@
     justify-content: center;
 }
 
-@media (max-width: 480px) {
-    .modal-actions {
-        flex-direction: column;
-    }
+.invite-section h3 {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
 
-    .modal-actions button {
-        width: 100%;
-    }
+.friend-item {
+    background: var(--bg-primary);
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.promotion-options {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    margin-top: var(--spacing-md);
+}
+
+.btn-promotion {
+    font-size: 2rem;
+    padding: var(--spacing-md);
+    background-color: var(--accent);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-promotion:hover {
+    transform: scale(1.1);
+}
+
+.moves-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.moves-header h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.btn-back-live {
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.moves-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xs);
+    font-size: 0.9rem;
+}
+
+.move-btn {
+    padding: 6px 10px;
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.move-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.move-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
 }

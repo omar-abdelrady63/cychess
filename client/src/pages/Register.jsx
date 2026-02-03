@@ -96,10 +96,10 @@ const Register = () => {
                                     border: 'none',
                                     cursor: 'pointer',
                                     color: 'var(--text-secondary)',
-                                    fontSize: '1.2rem'
+                                    fontSize: '1rem'
                                 }}
                             >
-                                {showPassword ? '👁️' : '👁️‍🗨️'}
+                                {showPassword ? <i className="fa-solid fa-eye-slash"></i> : <i className="fa-solid fa-eye"></i>}
                             </button>
                         </div>
                     </div>

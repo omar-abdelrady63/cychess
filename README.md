@@ -24,23 +24,25 @@ A modern, real-time chess platform built for playing with friends. Create games,
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socketdotio&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
 </div>
 
+### Architecture
+
 **Frontend:**
-- React 18 with Hooks
-- React Router for navigation
-- Vite for blazing-fast development
-- CSS3 with CSS Variables for theming
-- react-chessboard for board rendering
-- chess.js for game logic
+- **React 18** - Modern UI development with Hooks
+- **Vite** - High-performance build tool and development server
+- **Tailwind CSS** - Utility-first styling and dynamic theming
+- **React Router** - Declarative client-side routing
+- **Chess.js** - Core chess engine and move validation
+- **React Chessboard** - Interactive and customizable board component
 
 **Backend:**
-- Node.js & Express.js REST API
-- Socket.IO for real-time communication
-- MongoDB with Mongoose ODM
-- JWT authentication
-- bcrypt for password hashing
+- **Node.js & Express** - Scalable server architecture and REST API
+- **Socket.io** - Low-latency, real-time bidirectional communication
+- **MongoDB & Mongoose** - Flexible NoSQL data storage and object modeling
+- **JWT & Bcrypt** - Industry-standard security, authentication, and encryption
 
 ## 📋 Prerequisites
 
@@ -150,22 +152,23 @@ cychess/
 └── README.md
 ```
 
+
 ## 🎨 Available Themes
 
 Choose from 15 carefully crafted themes:
 
-- Deep Navy (Default)
-- Black & Gold
-- Grey & Beige
-- Purple & Silver
-- Crimson Shadow
-- Emerald City
-- Royal Blue
-- Sunset Horizon
-- Neon Nights
-- Ocean Breeze
-- Amber Glow
-- Lavender Dreams
+- **Olive Garden** (Default)
+- **Black & Gold**
+- **Grey & Beige**
+- **Purple & Silver**
+- **Crimson Shadow**
+- **Emerald City**
+- **Royal Blue**
+- **Sunset Horizon**
+- **Neon Nights**
+- **Ocean Breeze**
+- **Amber Glow**
+- **Lavender Dreams**
 - **Midnight Forest** ✨ NEW
 - **Cherry Blossom** ✨ NEW
 - **Arctic Frost** ✨ NEW

@@ -1,134 +1,149 @@
-[data-theme="deep-navy"] {
-    --bg-primary: #0F172A;
-    --bg-secondary: #1E293B;
-    --bg-tertiary: #334155;
-    --text-primary: #F1F5F9;
-    --text-secondary: #94A3B8;
-    --accent: #38BDF8;
+/* Olive Garden Theme */
+[data-theme="olive"] {
+    --bg-primary: #283618;
+    --bg-secondary: #606c38;
+    --bg-tertiary: #bc6c25;
+    --text-primary: #fefae0;
+    --text-secondary: #dda15e;
+    --accent: #bc6c25;
 }
 
-[data-theme="black-gold"] {
-    --bg-primary: #0a0a0a;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #2a2a2a;
-    --text-primary: #f5f5f5;
-    --text-secondary: #a0a0a0;
-    --accent: #FFD700;
+/* Fiery Depths Theme */
+[data-theme="fiery"] {
+    --bg-primary: #780000;
+    --bg-secondary: #c1121f;
+    --bg-tertiary: #003049;
+    --text-primary: #fdf0d5;
+    --text-secondary: #669bbc;
+    --accent: #669bbc;
 }
 
-[data-theme="grey-beige"] {
-    --bg-primary: #2f3640;
-    --bg-secondary: #353b48;
-    --bg-tertiary: #4a5568;
-    --text-primary: #f5f6fa;
-    --text-secondary: #dcdde1;
-    --accent: #f39c12;
+/* Lavender Dreams Theme */
+[data-theme="lavender"] {
+    --bg-primary: #22223b;
+    --bg-secondary: #4a4e69;
+    --bg-tertiary: #9a8c98;
+    --text-primary: #f2e9e4;
+    --text-secondary: #c9ada7;
+    --accent: #c9ada7;
 }
 
-[data-theme="purple-silver"] {
-    --bg-primary: #190028;
-    --bg-secondary: #240046;
-    --bg-tertiary: #3c096c;
-    --text-primary: #e0e0e0;
-    --text-secondary: #b0b0b0;
-    --accent: #9d4edd;
+/* Golden Hour Theme */
+[data-theme="golden"] {
+    --bg-primary: #000814;
+    --bg-secondary: #001d3d;
+    --bg-tertiary: #003566;
+    --text-primary: #ffd60a;
+    --text-secondary: #ffc300;
+    --accent: #ffc300;
 }
 
-[data-theme="crimson-shadow"] {
-    --bg-primary: #000000;
-    --bg-secondary: #1a0000;
-    --bg-tertiary: #330000;
-    --text-primary: #ffffff;
-    --text-secondary: #cccccc;
-    --accent: #dc143c;
+/* Neutral Elegance Theme */
+[data-theme="neutral"] {
+    --bg-primary: #0a0908;
+    --bg-secondary: #22333b;
+    --bg-tertiary: #5e503f;
+    --text-primary: #eae0d5;
+    --text-secondary: #c6ac8f;
+    --accent: #c6ac8f;
 }
 
-[data-theme="emerald-city"] {
-    --bg-primary: #052e16;
-    --bg-secondary: #064e3b;
-    --bg-tertiary: #047857;
-    --text-primary: #d1fae5;
-    --text-secondary: #6ee7b7;
-    --accent: #10b981;
+/* Autumn Harvest Theme */
+[data-theme="autumn"] {
+    --bg-primary: #432818;
+    --bg-secondary: #6f1d1b;
+    --bg-tertiary: #99582a;
+    --text-primary: #ffe6a7;
+    --text-secondary: #bb9457;
+    --accent: #bb9457;
 }
 
-[data-theme="royal-blue"] {
-    --bg-primary: #0a1128;
-    --bg-secondary: #001f54;
-    --bg-tertiary: #034078;
-    --text-primary: #fefcfb;
-    --text-secondary: #c5c5c5;
-    --accent: #1282a2;
-}
-
-[data-theme="sunset-horizon"] {
-    --bg-primary: #2d1b2e;
-    --bg-secondary: #422040;
-    --bg-tertiary: #5c2e5c;
-    --text-primary: #ffffb3;
+/* Sunset Boulevard Theme */
+[data-theme="sunset"] {
+    --bg-primary: #001427;
+    --bg-secondary: #708d81;
+    --bg-tertiary: #8d0801;
+    --text-primary: #f4d58d;
     --text-secondary: #f4d58d;
-    --accent: #fca311;
+    --accent: #bf0603;
 }
 
-[data-theme="neon-nights"] {
-    --bg-primary: #090909;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #2a2a2a;
-    --text-primary: #ffffff;
-    --text-secondary: #b0b0b0;
-    --accent: #ff2a6d;
+/* Midnight Blue Theme */
+[data-theme="midnight"] {
+    --bg-primary: #00296b;
+    --bg-secondary: #003f88;
+    --bg-tertiary: #00509d;
+    --text-primary: #ffd500;
+    --text-secondary: #fdc500;
+    --accent: #fdc500;
 }
 
-[data-theme="ocean-breeze"] {
-    --bg-primary: #001219;
-    --bg-secondary: #005f73;
-    --bg-tertiary: #0a9396;
-    --text-primary: #EDF6F9;
-    --text-secondary: #94d2bd;
-    --accent: #83C5BE;
+/* Deep Sea Theme */
+[data-theme="sea"] {
+    --bg-primary: #0d1321;
+    --bg-secondary: #1d2d44;
+    --bg-tertiary: #3e5c76;
+    --text-primary: #f0ebd8;
+    --text-secondary: #748cab;
+    --accent: #748cab;
 }
 
-[data-theme="amber-glow"] {
-    --bg-primary: #1a0f00;
-    --bg-secondary: #3d2000;
-    --bg-tertiary: #5c3000;
-    --text-primary: #fff5e6;
-    --text-secondary: #ffd9a6;
-    --accent: #F7931E;
+/* Steel Gray Theme */
+[data-theme="steel"] {
+    --bg-primary: #212529;
+    --bg-secondary: #343a40;
+    --bg-tertiary: #495057;
+    --text-primary: #f8f9fa;
+    --text-secondary: #adb5bd;
+    --accent: #6c757d;
 }
 
-[data-theme="lavender-dreams"] {
-    --bg-primary: #2d1b2e;
-    --bg-secondary: #4a2a4d;
-    --bg-tertiary: #6b3d6b;
-    --text-primary: #f5e6f7;
-    --text-secondary: #d4a5d6;
-    --accent: #D291BC;
+/* Berry Bliss Theme */
+[data-theme="berry"] {
+    --bg-primary: #450920;
+    --bg-secondary: #a53860;
+    --bg-tertiary: #da627d;
+    --text-primary: #f9dbbd;
+    --text-secondary: #ffa5ab;
+    --accent: #ffa5ab;
 }
 
-[data-theme="midnight-forest"] {
-    --bg-primary: #0d1b0d;
-    --bg-secondary: #1a2e1a;
-    --bg-tertiary: #2d4a2d;
-    --text-primary: #e8f5e8;
-    --text-secondary: #a8d5a8;
-    --accent: #d4af37;
+/* Rustic Charm Theme */
+[data-theme="rustic"] {
+    --bg-primary: #585123;
+    --bg-secondary: #772f1a;
+    --bg-tertiary: #f58549;
+    --text-primary: #eec170;
+    --text-secondary: #f2a65a;
+    --accent: #f58549;
 }
 
-[data-theme="cherry-blossom"] {
-    --bg-primary: #1a0a1f;
-    --bg-secondary: #2d1535;
-    --bg-tertiary: #4a2555;
-    --text-primary: #ffeef8;
-    --text-secondary: #ffb3d9;
-    --accent: #ff69b4;
+/* Fiery Red Theme */
+[data-theme="fieryRed"] {
+    --bg-primary: #03071e;
+    --bg-secondary: #370617;
+    --bg-tertiary: #6a040f;
+    --text-primary: #ffba08;
+    --text-secondary: #faa307;
+    --accent: #f48c06;
 }
 
-[data-theme="arctic-frost"] {
-    --bg-primary: #0a1420;
-    --bg-secondary: #152535;
-    --bg-tertiary: #1f3a52;
-    --text-primary: #e6f7ff;
-    --text-secondary: #b3d9f2;
-    --accent: #87ceeb;
+/* Ocean Blue Theme */
+[data-theme="oceanBlue"] {
+    --bg-primary: #006466;
+    --bg-secondary: #0b525b;
+    --bg-tertiary: #1b3a4b;
+    --text-primary: #4d194d;
+    --text-secondary: #3e1f47;
+    --accent: #312244;
+}
+
+/* Beach Vibes Theme */
+[data-theme="beach"] {
+    --bg-primary: #264653;
+    --bg-secondary: #2a9d8f;
+    --bg-tertiary: #f4a261;
+    --text-primary: #e9c46a;
+    --text-secondary: #e9c46a;
+    --accent: #e76f51;
 }

@@ -4,6 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { SocketProvider } from './context/SocketContext';
 import Navbar from './components/Navbar';
 import NotificationPopup from './components/NotificationPopup';
+import GameRejoinHandler from './components/GameRejoinHandler';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -21,7 +22,8 @@ function App() {
             <ThemeProvider>
                 <SocketProvider>
                     <Router>
-                        <div className="app">
+                        <GameRejoinHandler />
+                        <div className="min-h-screen flex flex-col bg-primary text-text-primary transition-colors duration-200">
                             <Navbar />
                             <NotificationPopup />
                             <Routes>

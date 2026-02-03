@@ -12,7 +12,7 @@ const Landing = () => {
                     marginBottom: 'var(--spacing-md)',
                     color: 'var(--accent)'
                 }}>
-                    ♟️ CyChess
+                    <i className="fa-solid fa-chess" style={{ marginRight: '10px' }}></i> CyChess
                 </h1>
                 <p style={{
                     fontSize: 'clamp(1rem, 3vw, 1.5rem)',
@@ -128,10 +128,10 @@ const Landing = () => {
                 fontSize: '0.9rem'
             }}>
                 <p style={{ margin: 0 }}>
-                    © {new Date().getFullYear()} CyChess. All rights reserved.
+                    <i className="fa-regular fa-copyright"></i> {new Date().getFullYear()} CyChess. All rights reserved.
                 </p>
                 <p style={{ margin: 'var(--spacing-xs) 0 0 0' }}>
-                    Created by <span style={{ color: 'var(--accent)', fontWeight: '500' }}>Omar Abd-Elrady</span>
+                    Created by <a href="https://github.com/omar-abdelrady63" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', fontWeight: '500' }}>Omar Abd-Elrady</a>
                 </p>
             </div>
         </div>

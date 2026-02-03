@@ -168,6 +168,7 @@ router.get('/history', auth, async (req, res) => {
 router.get('/:roomId', auth, async (req, res) => {
     try {
         const game = await Game.findOne({ room_id: req.params.roomId })
+            .populate('white_player', 'username rating avatar')
             .populate('black_player', 'username rating avatar')
             .populate('winner', 'username');
 
@@ -324,6 +325,33 @@ router.get('/:roomId/moves', auth, async (req, res) => {
 
         res.json({ success: true, moves });
     } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+router.get('/friend/:friendId/active-game', auth, async (req, res) => {
+    try {
+        const friendId = req.params.friendId;
+
+        const game = await Game.findOne({
+            $or: [
+                { white_player: friendId },
+                { black_player: friendId }
+            ],
+            status: 'active'
+        });
+
+        if (!game) {
+            return res.status(404).json({ error: 'No active game found' });
+        }
+
+        res.json({
+            success: true,
+            room_id: game.room_id
+        });
+
+    } catch (error) {
+        console.error('Get friend active game error:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });

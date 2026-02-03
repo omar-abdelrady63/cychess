@@ -79,14 +79,14 @@ const NotificationPopup = () => {
                                 removeNotification(notification.id);
                             }}
                         >
-                            ×
+                            <i className="fa-solid fa-xmark"></i>
                         </button>
                     </div>
                     <div className="notification-popup-message">
                         {notification.message}
                         {notification.type === 'game_invite' && (
                             <div style={{ marginTop: '8px', fontSize: '0.8rem', color: '#4ade80' }}>
-                                ▶ Click to Join Game
+                                <i className="fa-solid fa-play" style={{ marginRight: '4px' }}></i> Click to Join Game
                             </div>
                         )}
                     </div>

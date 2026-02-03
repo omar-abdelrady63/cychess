@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import { THEMES, getThemeKeys, migrateLegacyTheme } from '../config/themes';
 
 const ThemeContext = createContext();
 
@@ -10,27 +11,22 @@ export const useTheme = () => {
     return context;
 };
 
-const THEMES = [
-    'deep-navy',
-    'black-gold',
-    'grey-beige',
-    'purple-silver',
-    'crimson-shadow',
-    'emerald-city',
-    'royal-blue',
-    'sunset-horizon',
-    'neon-nights',
-    'ocean-breeze',
-    'amber-glow',
-    'lavender-dreams',
-    'midnight-forest',
-    'cherry-blossom',
-    'arctic-frost'
-];
-
 export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(() => {
-        return localStorage.getItem('theme') || 'deep-navy';
+        const savedTheme = localStorage.getItem('theme');
+
+        if (!savedTheme) {
+            return 'olive';
+        }
+
+        const themeKeys = getThemeKeys();
+        if (!themeKeys.includes(savedTheme)) {
+            const migratedTheme = migrateLegacyTheme(savedTheme);
+            localStorage.setItem('theme', migratedTheme);
+            return migratedTheme;
+        }
+
+        return savedTheme;
     });
 
     useEffect(() => {
@@ -39,7 +35,8 @@ export const ThemeProvider = ({ children }) => {
     }, [theme]);
 
     const changeTheme = (newTheme) => {
-        if (THEMES.includes(newTheme)) {
+        const themeKeys = getThemeKeys();
+        if (themeKeys.includes(newTheme)) {
             setTheme(newTheme);
         }
     };
@@ -47,8 +44,10 @@ export const ThemeProvider = ({ children }) => {
     const value = {
         theme,
         changeTheme,
-        themes: THEMES
+        themes: getThemeKeys(),
+        themeConfig: THEMES
     };
 
     return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };
+

@@ -43,9 +43,18 @@ const Dashboard = () => {
                 fetchPendingRequests();
             });
 
+            socket.on('friend_status_update', (data) => {
+                setFriends(prev => prev.map(friend =>
+                    friend.id === data.user_id
+                        ? { ...friend, status: data.status }
+                        : friend
+                ));
+            });
+
             return () => {
                 socket.off('new_notification');
                 socket.off('friend_list_update');
+                socket.off('friend_status_update');
             };
         }
     }, [socket]);
@@ -190,6 +199,33 @@ const Dashboard = () => {
         }
     };
 
+    const handleSpectate = async (friendId) => {
+        try {
+            const response = await axios.get(`${API_URL}/api/game/friend/${friendId}/active-game`);
+            if (response.data.room_id) {
+                navigate(`/game/${response.data.room_id}?spectate=true`);
+            }
+        } catch (error) {
+            console.error('Error getting friend game:', error);
+            alert('Could not find active game');
+        }
+    };
+
+    const renderStatus = (status) => {
+        switch (status) {
+            case 'online':
+                return <><i className="fa-solid fa-circle" style={{ color: '#22c55e', fontSize: '0.6rem', marginRight: '4px', verticalAlign: 'middle' }}></i> Online</>;
+            case 'offline':
+                return <><i className="fa-regular fa-circle" style={{ color: 'var(--text-secondary)', fontSize: '0.6rem', marginRight: '4px', verticalAlign: 'middle' }}></i> Offline</>;
+            case 'in_game':
+                return <><i className="fa-solid fa-chess" style={{ color: '#f97316', fontSize: '0.6rem', marginRight: '4px', verticalAlign: 'middle' }}></i> In Game</>;
+            case 'spectating':
+                return <><i className="fa-solid fa-eye" style={{ color: '#3b82f6', fontSize: '0.6rem', marginRight: '4px', verticalAlign: 'middle' }}></i> Spectating</>;
+            default:
+                return <><i className="fa-regular fa-circle" style={{ color: 'var(--text-secondary)', fontSize: '0.6rem', marginRight: '4px', verticalAlign: 'middle' }}></i> Offline</>;
+        }
+    };
+
     return (
         <div className="container">
             <h1 className="page-title">Welcome, {user?.username}</h1>
@@ -261,10 +297,10 @@ const Dashboard = () => {
                                 <div>
                                     <strong>{result.full_name}</strong>
                                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                                        {result.is_online ? '🟢 Online' : '⚫ Offline'}
+                                        {renderStatus(result.status || (result.is_online ? 'online' : 'offline'))}
                                     </div>
                                 </div>
-                                {result.status === 'none' && (
+                                {result.friend_status === 'none' && (
                                     <button
                                         className="btn-primary"
                                         onClick={() => sendFriendRequest(result.id)}
@@ -272,11 +308,13 @@ const Dashboard = () => {
                                         Add Friend
                                     </button>
                                 )}
-                                {result.status === 'sent' && (
+                                {result.friend_status === 'sent' && (
                                     <span style={{ color: 'var(--text-secondary)' }}>Request Sent</span>
                                 )}
-                                {result.status === 'friends' && (
-                                    <span style={{ color: 'var(--accent)' }}>✓ Friends</span>
+                                {result.friend_status === 'friends' && (
+                                    <span style={{ color: 'var(--accent)' }}>
+                                        <i className="fa-solid fa-check" style={{ marginRight: '4px' }}></i> Friends
+                                    </span>
                                 )}
                             </div>
                         ))}
@@ -343,12 +381,22 @@ const Dashboard = () => {
                                     }}
                                 >
                                     <div>
-                                        <strong>{friend.full_name}</strong>
+                                        <strong>{friend.full_name} {friend.rating ? `(${friend.rating})` : ''}</strong>
                                         <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                                            {friend.is_online ? '🟢 Online' : '⚫ Offline'}
+                                            {renderStatus(friend.status || (friend.is_online ? 'online' : 'offline'))}
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                        {friend.status === 'in_game' && (
+                                            <button
+                                                className="btn-primary"
+                                                onClick={() => handleSpectate(friend.id)}
+                                                style={{ padding: '4px 12px', fontSize: '0.8rem' }}
+                                            >
+                                                <i className="fa-solid fa-eye" style={{ marginRight: '4px' }}></i>
+                                                Spectate
+                                            </button>
+                                        )}
                                         <button
                                             className="btn-outline"
                                             onClick={() => handleDeleteFriend(friend.id)}
@@ -419,7 +467,7 @@ const Dashboard = () => {
                                             style={{ padding: '4px 8px', fontSize: '0.8rem' }}
                                             title="Mark as Read"
                                         >
-                                            ✓
+                                            <i className="fa-solid fa-check"></i>
                                         </button>
                                     )}
                                     <button
@@ -428,7 +476,7 @@ const Dashboard = () => {
                                         style={{ padding: '4px 8px', fontSize: '0.8rem', color: '#ef4444', borderColor: '#ef4444' }}
                                         title="Delete"
                                     >
-                                        🗑️
+                                        <i className="fa-solid fa-trash"></i>
                                     </button>
                                 </div>
                             </div>

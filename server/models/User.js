@@ -47,9 +47,10 @@ const userSchema = new mongoose.Schema({
     verification_code: {
         type: String
     },
-    is_online: {
-        type: Boolean,
-        default: false
+    status: {
+        type: String,
+        enum: ['online', 'offline', 'in_game', 'spectating'],
+        default: 'offline'
     },
     last_seen: {
         type: Date,
@@ -69,6 +70,10 @@ userSchema.index({ username: 1, discriminator: 1 }, { unique: true });
 
 userSchema.virtual('full_name').get(function () {
     return `${this.username}#${this.discriminator}`;
+});
+
+userSchema.virtual('is_online').get(function () {
+    return this.status === 'online' || this.status === 'in_game' || this.status === 'spectating';
 });
 
 userSchema.methods.setPassword = async function (password) {
@@ -111,12 +116,12 @@ userSchema.methods.getFriends = async function () {
     const sent = await FriendRequest.find({
         sender: this._id,
         status: 'accepted'
-    }).populate('receiver', 'username discriminator avatar is_online');
+    }).populate('receiver', 'username discriminator avatar is_online rating');
 
     const received = await FriendRequest.find({
         receiver: this._id,
         status: 'accepted'
-    }).populate('sender', 'username discriminator avatar is_online');
+    }).populate('sender', 'username discriminator avatar is_online rating');
 
     const friends = [
         ...sent.map(req => req.receiver),

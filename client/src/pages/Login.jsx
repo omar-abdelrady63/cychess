@@ -50,33 +50,43 @@ const Login = () => {
 
                     <div className="form-group">
                         <label>Password</label>
-                        <div style={{ position: 'relative' }}>
+
+                        <div style={{ position: 'relative', width: '100%' }}>
                             <input
+                                style={{
+                                    width: '100%',
+                                    boxSizing: 'border-box',
+                                    paddingRight: '40px'
+                                }}
                                 type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter your password"
                                 required
                             />
+
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
                                 style={{
                                     position: 'absolute',
-                                    right: '10px',
+                                    right: '12px',
                                     top: '50%',
                                     transform: 'translateY(-50%)',
                                     background: 'none',
                                     border: 'none',
                                     cursor: 'pointer',
                                     color: 'var(--text-secondary)',
-                                    fontSize: '1.2rem'
+                                    fontSize: '0.8rem'
                                 }}
                             >
-                                {showPassword ? '👁️' : '👁️‍🗨️'}
+                                {showPassword
+                                    ? <i className="fa-solid fa-eye-slash"></i>
+                                    : <i className="fa-solid fa-eye"></i>}
                             </button>
                         </div>
                     </div>
+
 
                     <button type="submit" className="btn-primary w-full" disabled={loading}>
                         {loading ? 'Logging in...' : 'Login'}

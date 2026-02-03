@@ -38,14 +38,31 @@ const ChessTimer = ({ time, isTurn }) => {
     };
 
     return (
-        <div className={`timer ${isTurn ? 'active-timer' : ''}`} style={{
-            padding: '5px 10px',
-            background: isTurn ? '#4ade80' : '#333',
-            color: isTurn ? '#000' : '#fff',
-            borderRadius: '4px',
-            fontWeight: 'bold'
-        }}>
+        <div className={`timer ${isTurn ? 'active-timer' : ''}`}>
             {formatTime(displayTime)}
+        </div>
+    );
+};
+
+// Simple countdown for abandonment
+const AbandonmentTimer = ({ seconds, reason }) => {
+    const [count, setCount] = useState(seconds);
+
+    useEffect(() => {
+        setCount(seconds);
+    }, [seconds]);
+
+    useEffect(() => {
+        if (count <= 0) return;
+        const interval = setInterval(() => setCount(c => c - 1), 1000);
+        return () => clearInterval(interval);
+    }, [count]);
+
+    const reasonText = reason === 'disconnect' ? 'Auto-Resign in' : 'Inactivity Auto-Loss in';
+
+    return (
+        <div style={{ color: 'red', fontWeight: 'bold', marginLeft: '10px' }}>
+            {reasonText}: {count}s
         </div>
     );
 };
@@ -56,6 +73,11 @@ const Game = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+    // Check if spectating from URL
+    const [searchParams] = useState(new URLSearchParams(window.location.search));
+    const isSpectatorFromURL = searchParams.get('spectate') === 'true';
+    const [isSpectator, setIsSpectator] = useState(isSpectatorFromURL);
 
     const [game, setGame] = useState(null);
     const [chess] = useState(new Chess());
@@ -73,12 +95,85 @@ const Game = () => {
     const [inviteStatus, setInviteStatus] = useState('');
     const [drawOffered, setDrawOffered] = useState(false);
 
+    // Abandonment State
+    const [abandonmentWarning, setAbandonmentWarning] = useState(null); // { player_color: 'white', seconds: 30 }
+
     const [reviewMode, setReviewMode] = useState(false);
     const [reviewMoveIndex, setReviewMoveIndex] = useState(null);
     const [movesList, setMovesList] = useState([]);
     const [optionSquares, setOptionSquares] = useState({});
     const [selectedSquare, setSelectedSquare] = useState(null);
     const [promotionMove, setPromotionMove] = useState(null);
+
+    // Inactivity State
+    const lastInteractionRef = useRef(Date.now());
+    const [inactivityWarning, setInactivityWarning] = useState(null); // Local warning for user
+    const [inactivityWarningSent, setInactivityWarningSent] = useState(false);
+
+
+    useEffect(() => {
+        const updateInteraction = () => {
+            lastInteractionRef.current = Date.now();
+            if (inactivityWarning) setInactivityWarning(null); // Clear local warning immediately on interaction
+        };
+
+        window.addEventListener('mousemove', updateInteraction);
+        window.addEventListener('mousedown', updateInteraction);
+        window.addEventListener('keypress', updateInteraction);
+        window.addEventListener('touchstart', updateInteraction);
+        window.addEventListener('click', updateInteraction);
+
+        return () => {
+            window.removeEventListener('mousemove', updateInteraction);
+            window.removeEventListener('mousedown', updateInteraction);
+            window.removeEventListener('keypress', updateInteraction);
+            window.removeEventListener('touchstart', updateInteraction);
+            window.removeEventListener('click', updateInteraction);
+        };
+    }, [inactivityWarning]);
+
+    // Check for inactivity every 1s
+    useEffect(() => {
+        const checkInactivity = setInterval(() => {
+            if (gameStatus !== 'active' || turn !== orientation) {
+                // If not my turn or game over, ensure no warnings persist and state is clean
+                if (inactivityWarningSent) {
+                    setInactivityWarningSent(false);
+                    socket.emit('active_inactivity_end', { room_id: roomId });
+                }
+                setInactivityWarning(null);
+                return;
+            }
+
+            const now = Date.now();
+            const elapsed = now - lastInteractionRef.current;
+            const inactivityThreshold = 10000; // 10s
+            const abandonmentThreshold = 70000; // 10s + 60s countdown
+
+            if (elapsed > abandonmentThreshold) {
+                // Time up, abandon game
+                socket.emit('client_game_abandoned', { room_id: roomId });
+                console.log('Abandoned due to inactivity');
+            } else if (elapsed > inactivityThreshold) {
+                // Warning Zone
+                const remaining = Math.ceil((abandonmentThreshold - elapsed) / 1000);
+                setInactivityWarning(remaining);
+
+                if (!inactivityWarningSent) {
+                    setInactivityWarningSent(true);
+                    socket.emit('active_inactivity_start', { room_id: roomId });
+                }
+            } else {
+                // Active Zone
+                if (inactivityWarningSent) {
+                    setInactivityWarningSent(false);
+                    socket.emit('active_inactivity_end', { room_id: roomId });
+                }
+            }
+        }, 1000);
+
+        return () => clearInterval(checkInactivity);
+    }, [gameStatus, turn, orientation, inactivityWarningSent, roomId, socket]);
 
     useEffect(() => {
         const initGame = async () => {
@@ -104,13 +199,16 @@ const Game = () => {
 
                 console.log(" User ID:", userId, "UserSide:", userSide); // DEBUG
 
-                if (userSide === 'spectator' && g.status === 'waiting' && (!g.white_player || !g.black_player)) {
+                if (!isSpectatorFromURL && userSide === 'spectator' && g.status === 'waiting' && (!g.white_player || !g.black_player)) {
                     const joinRes = await axios.post(`${API_URL}/api/game/join`, { room_id: roomId });
                     if (joinRes.data.success) {
                         userSide = joinRes.data.your_color;
                         const updated = await axios.get(`${API_URL}/api/game/${roomId}`);
                         setGame(updated.data.game);
+                        setIsSpectator(false);
                     }
+                } else if (userSide === 'spectator' || isSpectatorFromURL) {
+                    setIsSpectator(true);
                 }
 
                 setOrientation(userSide === 'black' ? 'black' : 'white');
@@ -132,7 +230,12 @@ const Game = () => {
     useEffect(() => {
         if (!socket || !isConnected) return;
 
-        socket.emit('join_game', { room_id: roomId });
+        // Emit appropriate event based on spectator status
+        if (isSpectator) {
+            socket.emit('spectate_game', { room_id: roomId });
+        } else {
+            socket.emit('join_game', { room_id: roomId });
+        }
 
         const handleMoveMade = (data) => {
             console.log("Move Made:", data);
@@ -149,6 +252,14 @@ const Game = () => {
             setBlackTime(data.black_time);
 
             fetchMoves();
+
+            if (data.new_ratings) {
+                setGame(prev => ({
+                    ...prev,
+                    white_player: { ...prev.white_player, rating: data.new_ratings.white_new_rating },
+                    black_player: { ...prev.black_player, rating: data.new_ratings.black_new_rating }
+                }));
+            }
 
             if (data.game_over) {
                 finishSound.play().catch(() => { });
@@ -172,6 +283,15 @@ const Game = () => {
         const handleGameOverEvent = (data) => {
             finishSound.play().catch(() => { });
             setGameStatus('completed');
+
+            if (data.new_ratings) {
+                setGame(prev => ({
+                    ...prev,
+                    white_player: { ...prev.white_player, rating: data.new_ratings.white_new_rating },
+                    black_player: { ...prev.black_player, rating: data.new_ratings.black_new_rating }
+                }));
+            }
+
             handleGameOver(data.result, data.reason);
         };
 
@@ -201,15 +321,69 @@ const Game = () => {
             setWhiteTime(data.white_time);
             setBlackTime(data.black_time);
             setGameStatus('active');
+            setAbandonmentWarning(null);
+        });
+
+        socket.on('abandonment_warning', (data) => {
+            console.log('Abandonment warning:', data);
+            setAbandonmentWarning({
+                player_color: data.player_color,
+                seconds: data.seconds_remaining,
+                reason: 'disconnect'
+            });
+        });
+
+        socket.on('abandonment_canceled', () => {
+            console.log('Abandonment canceled');
+            setAbandonmentWarning(null);
+        });
+
+        socket.on('opponent_inactivity_warning', (data) => {
+            setAbandonmentWarning({
+                player_color: turn,
+                seconds: 59,
+                reason: 'inactivity'
+            });
+        });
+
+        socket.on('opponent_inactivity_canceled', () => {
+            setAbandonmentWarning(null);
+        });
+
+        socket.on('spectator_joined', (data) => {
+            console.log('Spectator joined game:', data);
+            setGame(prev => ({
+                ...prev,
+                white_player: data.white_player,
+                black_player: data.black_player,
+                status: data.game_status
+            }));
+            setFen(data.fen);
+            setWhiteTime(data.white_time);
+            setBlackTime(data.black_time);
+            setTurn(data.current_turn);
+            setGameStatus(data.game_status);
+            if (data.result) {
+                handleGameOver(data.result, data.termination_reason);
+            }
         });
 
         return () => {
+            if (isSpectator) {
+                socket.emit('leave_spectate', { room_id: roomId });
+            }
+
             socket.off('move_made', handleMoveMade);
             socket.off('game_over', handleGameOverEvent);
             socket.off('player_joined', handlePlayerJoined);
             socket.off('game_start');
+            socket.off('abandonment_warning');
+            socket.off('abandonment_canceled');
+            socket.off('opponent_inactivity_warning');
+            socket.off('opponent_inactivity_canceled');
+            socket.off('spectator_joined');
         };
-    }, [socket, isConnected, roomId, chess]);
+    }, [socket, isConnected, roomId, chess, isSpectator]);
 
     useEffect(() => {
         if (!socket) return;
@@ -227,10 +401,11 @@ const Game = () => {
         else if (result === 'white_win') msg = `White Wins by ${reason}`;
         else if (result === 'black_win') msg = `Black Wins by ${reason}`;
         setResultMessage(msg);
+        setAbandonmentWarning(null);
     };
 
     function onMouseOverSquare(square) {
-        if (reviewMode || gameStatus !== 'active' || turn !== orientation) return;
+        if (isSpectator || reviewMode || gameStatus !== 'active' || turn !== orientation) return;
         if (selectedSquare) return;
 
         const moves = chess.moves({
@@ -264,7 +439,7 @@ const Game = () => {
     }
 
     function onSquareClick(square) {
-        if (reviewMode || gameStatus !== 'active' || turn !== orientation) return;
+        if (isSpectator || reviewMode || gameStatus !== 'active' || turn !== orientation) return;
 
         const piece = chess.get(square);
         if (!selectedSquare) {
@@ -299,7 +474,7 @@ const Game = () => {
     }
 
     const onDrop = (sourceSquare, targetSquare) => {
-        if (reviewMode || gameStatus !== 'active' || turn !== orientation) return false;
+        if (isSpectator || reviewMode || gameStatus !== 'active' || turn !== orientation) return false;
 
         const piece = chess.get(sourceSquare);
         const isPromotion = piece?.type === 'p' &&
@@ -415,36 +590,23 @@ const Game = () => {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <h3>Choose Promotion Piece</h3>
-                        <div style={{ display: 'flex', gap: 'var(--spacing-md)', justifyContent: 'center', marginTop: 'var(--spacing-md)' }}>
-                            <button
-                                onClick={() => handlePromotion('q')}
-                                className="btn-primary"
-                                style={{ fontSize: '2rem', padding: 'var(--spacing-md)' }}
-                            >
-                                ♛
-                            </button>
-                            <button
-                                onClick={() => handlePromotion('r')}
-                                className="btn-primary"
-                                style={{ fontSize: '2rem', padding: 'var(--spacing-md)' }}
-                            >
-                                ♜
-                            </button>
-                            <button
-                                onClick={() => handlePromotion('b')}
-                                className="btn-primary"
-                                style={{ fontSize: '2rem', padding: 'var(--spacing-md)' }}
-                            >
-                                ♝
-                            </button>
-                            <button
-                                onClick={() => handlePromotion('n')}
-                                className="btn-primary"
-                                style={{ fontSize: '2rem', padding: 'var(--spacing-md)' }}
-                            >
-                                ♞
-                            </button>
+                        <div className="promotion-options">
+                            <button onClick={() => handlePromotion('q')} className="btn-promotion"><i className="fa-solid fa-chess-queen"></i></button>
+                            <button onClick={() => handlePromotion('r')} className="btn-promotion"><i className="fa-solid fa-chess-rook"></i></button>
+                            <button onClick={() => handlePromotion('b')} className="btn-promotion"><i className="fa-solid fa-chess-bishop"></i></button>
+                            <button onClick={() => handlePromotion('n')} className="btn-promotion"><i className="fa-solid fa-chess-knight"></i></button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {inactivityWarning && (
+                <div className="modal-overlay" style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}>
+                    <div className="modal-content" style={{ border: '2px solid red' }}>
+                        <h3 style={{ color: 'red', fontSize: '1.5rem' }}><i className="fa-solid fa-triangle-exclamation"></i> INACTIVITY WARNING <i className="fa-solid fa-triangle-exclamation"></i></h3>
+                        <p>You have been inactive for too long.</p>
+                        <p style={{ fontSize: '1.2rem' }}>Auto-Forfeit in: <strong>{inactivityWarning}s</strong></p>
+                        <p style={{ fontSize: '0.9rem', color: '#ccc' }}>Move your cursor or tap to continue playing.</p>
                     </div>
                 </div>
             )}
@@ -470,7 +632,13 @@ const Game = () => {
                                 src={game?.black_player?.avatar || getAvatar(game?.black_player?.username || 'Opponent')}
                                 alt="black" className="avatar-sm"
                             />
-                            <span>{game?.black_player?.username || 'Waiting for opponent...'}</span>
+                            <span>
+                                {game?.black_player?.username || 'Waiting for opponent...'}
+                                {game?.black_player?.rating ? ` (${game.black_player.rating})` : ''}
+                            </span>
+                            {abandonmentWarning && abandonmentWarning.player_color === 'black' && (
+                                <AbandonmentTimer seconds={abandonmentWarning.seconds} reason={abandonmentWarning.reason} />
+                            )}
                         </div>
                         <ChessTimer time={blackTime} isTurn={gameStatus === 'active' && turn === 'black'} />
                     </div>
@@ -492,7 +660,13 @@ const Game = () => {
                                 src={game?.white_player?.avatar || getAvatar(game?.white_player?.username || 'You')}
                                 alt="white" className="avatar-sm"
                             />
-                            <span>{game?.white_player?.username || 'You'}</span>
+                            <span>
+                                {game?.white_player?.username || 'You'}
+                                {game?.white_player?.rating ? ` (${game.white_player.rating})` : ''}
+                            </span>
+                            {abandonmentWarning && abandonmentWarning.player_color === 'white' && (
+                                <AbandonmentTimer seconds={abandonmentWarning.seconds} reason={abandonmentWarning.reason} />
+                            )}
                         </div>
                         <ChessTimer time={whiteTime} isTurn={gameStatus === 'active' && turn === 'white'} />
                     </div>
@@ -501,11 +675,27 @@ const Game = () => {
                 <div className="sidebar">
                     <div className="game-status-card">
                         <h2>{gameStatus === 'active' ? `${turn.toUpperCase()} to move` : gameStatus.toUpperCase()}</h2>
+                        {isSpectator && (
+                            <div style={{
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                border: '1px solid #3b82f6',
+                                borderRadius: '8px',
+                                padding: '8px 12px',
+                                marginTop: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                color: '#3b82f6'
+                            }}>
+                                <i className="fa-solid fa-eye"></i>
+                                <span>Spectator Mode</span>
+                            </div>
+                        )}
                         {resultMessage && <div className="result-alert">{resultMessage}</div>}
                     </div>
 
                     <div className="controls">
-                        {gameStatus === 'active' && (
+                        {!isSpectator && gameStatus === 'active' && (
                             <>
                                 <button onClick={handleResign} className="btn btn-danger"> Resign</button>
                                 <button onClick={handleOfferDraw} className="btn btn-secondary">Offer Draw</button>
@@ -517,71 +707,21 @@ const Game = () => {
                     </div>
 
                     {movesList.length > 0 && (
-                        <div className="moves-section" style={{
-                            marginTop: 'var(--spacing-lg)',
-                            padding: 'var(--spacing-md)',
-                            background: 'var(--surface)',
-                            borderRadius: 'var(--radius-md)',
-                            maxHeight: '300px',
-                            overflowY: 'auto'
-                        }}>
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginBottom: 'var(--spacing-sm)'
-                            }}>
-                                <h3 style={{ margin: 0, fontSize: '1rem' }}>Moves</h3>
+                        <div className="moves-section">
+                            <div className="moves-header">
+                                <h3>Moves</h3>
                                 {reviewMode && (
-                                    <button
-                                        onClick={handleBackToLive}
-                                        className="btn-outline"
-                                        style={{
-                                            padding: '4px 12px',
-                                            fontSize: '0.85rem',
-                                            background: 'var(--primary)',
-                                            color: 'white',
-                                            border: 'none'
-                                        }}
-                                    >
-                                        ↩ Back to Live
+                                    <button onClick={handleBackToLive} className="btn-back-live">
+                                        <i className="fa-solid fa-rotate-left" style={{ marginRight: '5px' }}></i> Back to Live
                                     </button>
                                 )}
                             </div>
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(2, 1fr)',
-                                gap: 'var(--spacing-xs)',
-                                fontSize: '0.9rem'
-                            }}>
+                            <div className="moves-grid">
                                 {movesList.map((move, index) => (
                                     <button
                                         key={index}
                                         onClick={() => handleMoveClick(index)}
-                                        style={{
-                                            padding: '6px 10px',
-                                            background: reviewMoveIndex === index
-                                                ? 'var(--primary)'
-                                                : 'var(--background)',
-                                            color: reviewMoveIndex === index
-                                                ? 'white'
-                                                : 'var(--text-primary)',
-                                            border: '1px solid var(--border)',
-                                            borderRadius: 'var(--radius-sm)',
-                                            cursor: 'pointer',
-                                            textAlign: 'left',
-                                            transition: 'all 0.2s'
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            if (reviewMoveIndex !== index) {
-                                                e.target.style.background = 'var(--surface-hover)';
-                                            }
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            if (reviewMoveIndex !== index) {
-                                                e.target.style.background = 'var(--background)';
-                                            }
-                                        }}
+                                        className={`move-btn ${reviewMoveIndex === index ? 'active' : ''}`}
                                     >
                                         {move.move_number}. {move.san}
                                     </button>
@@ -595,12 +735,14 @@ const Game = () => {
                             <h3>Invite Friends</h3>
                             {inviteStatus && <p>{inviteStatus}</p>}
                             <div className="friends-list">
-                                {friends.map(f => (
-                                    <div key={f.id} className="friend-item">
-                                        <span>{f.username}</span>
-                                        <button onClick={() => handleInvite(f.id)}>+</button>
-                                    </div>
-                                ))}
+                                {friends
+                                    // .filter(f => f.status === 'online')
+                                    .map(f => (
+                                        <div key={f.id} className="friend-item">
+                                            <span>{f.username}</span>
+                                            <button onClick={() => handleInvite(f.id)}>+</button>
+                                        </div>
+                                    ))}
                             </div>
                         </div>
                     )}
