@@ -73,8 +73,8 @@ cychess/
 **Omar Abd-Elrady**
 
 - **GitHub**: [omar-abdelrady63](https://github.com/omar-abdelrady63)
-- **Email**: [Contact me via GitHub]
-- **Portfolio**: [Link to Portfolio]
+- **Email**: [EMAIL_ADDRESS](abdelradyomar7@gmail.com)
+- **Portfolio**: [MY PORTFOLIO](https://omar-abdelrady63.github.io/Portfolio/)
 
 ---
 
