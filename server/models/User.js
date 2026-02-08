@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
         losses: { type: Number, default: 0 },
         draws: { type: Number, default: 0 }
     },
-    // ---------------------------------------
+
     is_verified: {
         type: Boolean,
         default: false

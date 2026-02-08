@@ -1,4 +1,4 @@
-/* Olive Garden Theme */
+
 [data-theme="olive"] {
     --bg-primary: #283618;
     --bg-secondary: #606c38;
@@ -8,7 +8,6 @@
     --accent: #bc6c25;
 }
 
-/* Fiery Depths Theme */
 [data-theme="fiery"] {
     --bg-primary: #780000;
     --bg-secondary: #c1121f;
@@ -18,7 +17,6 @@
     --accent: #669bbc;
 }
 
-/* Lavender Dreams Theme */
 [data-theme="lavender"] {
     --bg-primary: #22223b;
     --bg-secondary: #4a4e69;
@@ -28,7 +26,6 @@
     --accent: #c9ada7;
 }
 
-/* Golden Hour Theme */
 [data-theme="golden"] {
     --bg-primary: #000814;
     --bg-secondary: #001d3d;
@@ -38,7 +35,6 @@
     --accent: #ffc300;
 }
 
-/* Neutral Elegance Theme */
 [data-theme="neutral"] {
     --bg-primary: #0a0908;
     --bg-secondary: #22333b;
@@ -48,7 +44,6 @@
     --accent: #c6ac8f;
 }
 
-/* Autumn Harvest Theme */
 [data-theme="autumn"] {
     --bg-primary: #432818;
     --bg-secondary: #6f1d1b;
@@ -58,7 +53,6 @@
     --accent: #bb9457;
 }
 
-/* Sunset Boulevard Theme */
 [data-theme="sunset"] {
     --bg-primary: #001427;
     --bg-secondary: #708d81;
@@ -68,7 +62,6 @@
     --accent: #bf0603;
 }
 
-/* Midnight Blue Theme */
 [data-theme="midnight"] {
     --bg-primary: #00296b;
     --bg-secondary: #003f88;
@@ -78,7 +71,6 @@
     --accent: #fdc500;
 }
 
-/* Deep Sea Theme */
 [data-theme="sea"] {
     --bg-primary: #0d1321;
     --bg-secondary: #1d2d44;
@@ -88,7 +80,6 @@
     --accent: #748cab;
 }
 
-/* Steel Gray Theme */
 [data-theme="steel"] {
     --bg-primary: #212529;
     --bg-secondary: #343a40;
@@ -98,7 +89,6 @@
     --accent: #6c757d;
 }
 
-/* Berry Bliss Theme */
 [data-theme="berry"] {
     --bg-primary: #450920;
     --bg-secondary: #a53860;
@@ -108,7 +98,6 @@
     --accent: #ffa5ab;
 }
 
-/* Rustic Charm Theme */
 [data-theme="rustic"] {
     --bg-primary: #585123;
     --bg-secondary: #772f1a;
@@ -118,7 +107,6 @@
     --accent: #f58549;
 }
 
-/* Fiery Red Theme */
 [data-theme="fieryRed"] {
     --bg-primary: #03071e;
     --bg-secondary: #370617;
@@ -128,7 +116,6 @@
     --accent: #f48c06;
 }
 
-/* Ocean Blue Theme */
 [data-theme="oceanBlue"] {
     --bg-primary: #006466;
     --bg-secondary: #0b525b;
@@ -138,7 +125,6 @@
     --accent: #312244;
 }
 
-/* Beach Vibes Theme */
 [data-theme="beach"] {
     --bg-primary: #264653;
     --bg-secondary: #2a9d8f;

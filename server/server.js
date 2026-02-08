@@ -3,7 +3,6 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 require('dotenv').config();
-// github update test
 
 const connectDB = require('./config/db');
 const registerGameSocket = require('./sockets/gameSocket');
@@ -12,6 +11,8 @@ const authRoutes = require('./routes/auth');
 const friendsRoutes = require('./routes/friends');
 const gameRoutes = require('./routes/game');
 const notificationsRoutes = require('./routes/notifications');
+const tournamentRoutes = require('./routes/tournament');
+const usersRoutes = require('./routes/users');
 
 const app = express();
 const server = http.createServer(app);
@@ -40,6 +41,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/friends', friendsRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/tournament', tournamentRoutes);
+app.use('/api/users', usersRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'CyChess API is running' });

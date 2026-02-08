@@ -19,6 +19,7 @@
         "mongoose": "^8.1.0",
         "nodemailer": "^7.0.12",
         "socket.io": "^4.6.1",
+        "stockfish": "^17.1.0",
         "uuid": "^9.0.1"
     },
     "devDependencies": {

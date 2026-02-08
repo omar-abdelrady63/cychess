@@ -2,18 +2,6 @@
 
 A modern, real-time chess platform built for playing with friends. Create games, challenge opponents, and track your chess journey—all in a sleek, customizable interface.
 
-## ✨ Features
-
-- **Real-time Multiplayer** - Instant move synchronization using WebSocket technology
-- **Friend System** - Add friends, send invites, and manage your chess network
-- **Flexible Time Controls** - Choose from 1, 3, 5, 10, 30, or 60-minute games
-- **Move Review** - Click through game history to analyze every position
-- **15 Unique Themes** - Personalize your board with beautiful color schemes
-- **Sound Effects** - Immersive audio for moves, captures, checks, and game endings
-- **PGN Export** - Download games for analysis on other platforms
-- **User Profiles** - Custom avatars and personalized settings
-- **Game History** - Track all your past matches and results
-
 ## 🛠️ Tech Stack
 
 <div align="center">
@@ -28,168 +16,66 @@ A modern, real-time chess platform built for playing with friends. Create games,
 
 </div>
 
-### Architecture
+## ✨ Features
 
-**Frontend:**
-- **React 18** - Modern UI development with Hooks
-- **Vite** - High-performance build tool and development server
-- **Tailwind CSS** - Utility-first styling and dynamic theming
-- **React Router** - Declarative client-side routing
-- **Chess.js** - Core chess engine and move validation
-- **React Chessboard** - Interactive and customizable board component
-
-**Backend:**
-- **Node.js & Express** - Scalable server architecture and REST API
-- **Socket.io** - Low-latency, real-time bidirectional communication
-- **MongoDB & Mongoose** - Flexible NoSQL data storage and object modeling
-- **JWT & Bcrypt** - Industry-standard security, authentication, and encryption
-
-## 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- **Node.js** (v16 or higher) - [Download](https://nodejs.org/)
-- **MongoDB** (v5 or higher) - [Download](https://www.mongodb.com/try/download/community) or use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-- **npm** or **yarn** package manager
-```bash
-git clone https://github.com/omar-abdelrady63/cychess.git
-cd cychess
-```
-
-Install root dependencies (if any):
-```bash
-npm install
-```
-
-Install server dependencies:
-```bash
-cd server
-npm install
-```
-
-Install client dependencies:
-```bash
-cd ../client
-npm install
-```
-
-
-### 3. Database Setup
-
-If using local MongoDB, ensure the MongoDB service is running:
-
-```bash
-# Windows
-net start MongoDB
-
-# macOS (via Homebrew)
-brew services start mongodb-community
-
-# Linux
-sudo systemctl start mongod
-```
-
-The application will automatically create the database and collections on first run.
-
-## 🎮 Running the Application
-
-### Development Mode
-
-Open two terminal windows:
-
-**Terminal 1 - Start the backend server:**
-```bash
-cd server
-npm run dev
-```
-Server will run on `http://localhost:5000`
-
-**Terminal 2 - Start the frontend:**
-```bash
-cd client
-npm run dev
-```
-Client will run on `http://localhost:5173`
-
-### Production Build
-
-Build the client:
-```bash
-cd client
-npm run build
-```
-
-Start the production server:
-```bash
-cd server
-npm start
-```
+- **Real-time Multiplayer** - Instant move synchronization using WebSocket technology.
+- **Analysis Mode** - Analyze your games with the integrated Stockfish 16 engine.
+- **Friend System** - Add friends, send invites, and see their online status.
+- **Tournaments** - Create and participate in chess tournaments.
+- **Flexible Time Controls** - Ranging from Bullet (1 min) to Classical (60 mins).
+- **15 Unique Themes** - Customize your board with beautiful, polished themes.
+- **Game History** - Review past games and export generic PGNs.
+- **Responsive Design** - Optimized for desktop, tablet, and mobile play.
 
 ## 📁 Project Structure
 
 ```
 cychess/
-├── client/                 # React frontend
-│   ├── public/            # Static assets (sounds, images)
-│   ├── src/
-│   │   ├── components/    # Reusable React components
-│   │   ├── context/       # React Context (Auth, Socket, Theme)
-│   │   ├── pages/         # Page components (Dashboard, Game, etc.)
-│   │   ├── styles/        # CSS files and themes
-│   │   └── main.jsx       # App entry point
-│   └── package.json
+├── client/                 # React Frontend
+│   ├── public/             
+│   └── src/
+│       ├── components/     # UI Components (Board, Modal, diverse widgets)
+│       ├── context/        # State Management (Auth, Socket, Theme)
+│       ├── pages/          # Main Views (Game, Dashboard, Profile)
+│       └── styles/         # Global CSS & Tailwind config
 │
-├── server/                # Node.js backend
-│   ├── config/           # Configuration files
-│   ├── controllers/      # Route controllers
-│   ├── middleware/       # Custom middleware (auth, etc.)
-│   ├── models/           # Mongoose models
-│   ├── routes/           # Express routes
-│   ├── sockets/          # Socket.IO event handlers
-│   ├── utils/            # Helper functions
-│   └── server.js         # Server entry point
+├── server/                 # Node.js Backend
+│   ├── config/             # DB Connection & Environment Config
+│   ├── controllers/        # Request Handlers
+│   ├── models/             # Database Schemas (User, Game, etc.)
+│   ├── routes/             # API Route Definitions
+│   └── sockets/            # Real-time Event Logic
 │
 └── README.md
 ```
 
+## 📅 Project Evolution Timeline
 
-## 🎨 Available Themes
+<div align="center">
 
-Choose from 15 **NEW** carefully crafted themes:
+| Version | Status | Description |
+|:---:|:---:|:---|
+| **v1.0** | 🔴 Legacy | **Initial Prototype**<br>Values: Simple Flask app (Python).<br>Details: Basic chess logic, HTML/CSS frontend, no real-time features. |
+| **v2.0** | 🟡 Past | **The MERN Rewrite**<br>Values: Scalability & Real-time.<br>Details: Complete refactor to MERN stack. Added user auth, Socket.io for live moves, and MongoDB integration. |
+| **v3.0** | 🟢 Stable | **Feature Expansion**<br>Values: Community & Experience.<br>Details: Friend system implementation, 15+ themes, sound effects, responsive UI improvements. |
+| **v4.0** | 🚀 **Current** | **The "Glass" Era & Intelligence** (Last 5 Days)<br>Details:<br>• **Glassmorphism UI**: Complete visual overhaul with premium glass effects.<br>• **Stockfish Integration**: Added browser-based engine analysis (WASM).<br>• **Tournament Mode**: New system for organized competitive play.<br>• **Performance**: Optimized rendering and WebSocket handling.<br>• **Security**: Enhanced COOP/COEP headers for SharedArrayBuffer support. |
 
-- **Olive Garden** (Default)
-- **Black & Gold**
-- **Grey & Beige**
-- **Purple & Silver**
-- **Crimson Shadow**
-- **Emerald City**
-- **Royal Blue**
-- **Sunset Horizon**
-- **Neon Nights**
-- **Ocean Breeze**
-- **Amber Glow**
-- **Lavender Dreams**
-- **Midnight Forest** 
-- **Cherry Blossom** 
-- **Arctic Frost** 
+</div>
 
-## 🤝 Contributing
+<br>
 
-Contributions are welcome! Here's how you can help:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Please ensure your code follows the existing style and includes appropriate tests.
-
+<div align="center">
+  <h3>● ─── ● ─── ● ─── ◉</h3>
+</div>
 
 ## 📧 Contact
 
-For questions, suggestions, or issues, please contact me on my social media (found in portfolio and github account).
+**Omar Abd-Elrady**
+
+- **GitHub**: [omar-abdelrady63](https://github.com/omar-abdelrady63)
+- **Email**: [Contact me via GitHub]
+- **Portfolio**: [Link to Portfolio]
 
 ---
 
-**All rights reserved to Omar Abd-Elrady.**
+**All rights reserved © 2026**

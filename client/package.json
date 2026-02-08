@@ -13,11 +13,13 @@
         "@tailwindcss/postcss": "^4.1.18",
         "axios": "^1.6.5",
         "chess.js": "^1.0.0-beta.6",
+        "lucide-react": "^0.563.0",
         "react": "^18.2.0",
         "react-chessboard": "^4.3.2",
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.21.3",
-        "socket.io-client": "^4.6.1"
+        "socket.io-client": "^4.6.1",
+        "stockfish.js": "^10.0.2"
     },
     "devDependencies": {
         "@testing-library/react": "^14.1.2",

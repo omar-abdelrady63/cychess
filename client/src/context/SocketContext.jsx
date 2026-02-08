@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
@@ -16,20 +16,22 @@ export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
     const { user } = useAuth();
+    const socketRef = useRef(null);
 
     const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
 
     useEffect(() => {
         if (!user) {
-            if (socket) {
-                socket.disconnect();
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
                 setSocket(null);
                 setIsConnected(false);
             }
             return;
         }
 
-        if (socket && socket.connected) return;
+        if (socketRef.current && socketRef.current.connected) return;
 
         console.log('Initializing socket connection...');
 
@@ -55,10 +57,12 @@ export const SocketProvider = ({ children }) => {
             setIsConnected(false);
         });
 
+        socketRef.current = newSocket;
         setSocket(newSocket);
 
         return () => {
             newSocket.disconnect();
+            socketRef.current = null;
         };
 
     }, [user?._id, user?.id]);

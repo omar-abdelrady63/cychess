@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import ChatBox from '../components/ChatBox';
+import TournamentLeaderboard from '../components/TournamentLeaderboard';
 import '../styles/Game.css';
 
 const moveSound = new Audio('/assets/sounds/move.mp3');
@@ -44,7 +46,6 @@ const ChessTimer = ({ time, isTurn }) => {
     );
 };
 
-// Simple countdown for abandonment
 const AbandonmentTimer = ({ seconds, reason }) => {
     const [count, setCount] = useState(seconds);
 
@@ -74,10 +75,16 @@ const Game = () => {
     const navigate = useNavigate();
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-    // Check if spectating from URL
-    const [searchParams] = useState(new URLSearchParams(window.location.search));
+    const [searchParams] = useSearchParams();
     const isSpectatorFromURL = searchParams.get('spectate') === 'true';
+    const tournamentId = searchParams.get('tournamentId');
     const [isSpectator, setIsSpectator] = useState(isSpectatorFromURL);
+
+    const [showTournamentModal, setShowTournamentModal] = useState(false);
+    const [leaderboard, setLeaderboard] = useState([]);
+    const [isTournamentAdmin, setIsTournamentAdmin] = useState(false);
+    const [isRoundComplete, setIsRoundComplete] = useState(false);
+    const [advancingRound, setAdvancingRound] = useState(false);
 
     const [game, setGame] = useState(null);
     const [chess] = useState(new Chess());
@@ -95,8 +102,7 @@ const Game = () => {
     const [inviteStatus, setInviteStatus] = useState('');
     const [drawOffered, setDrawOffered] = useState(false);
 
-    // Abandonment State
-    const [abandonmentWarning, setAbandonmentWarning] = useState(null); // { player_color: 'white', seconds: 30 }
+    const [abandonmentWarning, setAbandonmentWarning] = useState(null); 
 
     const [reviewMode, setReviewMode] = useState(false);
     const [reviewMoveIndex, setReviewMoveIndex] = useState(null);
@@ -105,16 +111,16 @@ const Game = () => {
     const [selectedSquare, setSelectedSquare] = useState(null);
     const [promotionMove, setPromotionMove] = useState(null);
 
-    // Inactivity State
-    const lastInteractionRef = useRef(Date.now());
-    const [inactivityWarning, setInactivityWarning] = useState(null); // Local warning for user
-    const [inactivityWarningSent, setInactivityWarningSent] = useState(false);
+    const [chatMessages, setChatMessages] = useState([]);
 
+    const lastInteractionRef = useRef(Date.now());
+    const [inactivityWarning, setInactivityWarning] = useState(null); 
+    const [inactivityWarningSent, setInactivityWarningSent] = useState(false);
 
     useEffect(() => {
         const updateInteraction = () => {
             lastInteractionRef.current = Date.now();
-            if (inactivityWarning) setInactivityWarning(null); // Clear local warning immediately on interaction
+            if (inactivityWarning) setInactivityWarning(null); 
         };
 
         window.addEventListener('mousemove', updateInteraction);
@@ -132,11 +138,10 @@ const Game = () => {
         };
     }, [inactivityWarning]);
 
-    // Check for inactivity every 1s
     useEffect(() => {
         const checkInactivity = setInterval(() => {
             if (gameStatus !== 'active' || turn !== orientation) {
-                // If not my turn or game over, ensure no warnings persist and state is clean
+
                 if (inactivityWarningSent) {
                     setInactivityWarningSent(false);
                     socket.emit('active_inactivity_end', { room_id: roomId });
@@ -147,15 +152,15 @@ const Game = () => {
 
             const now = Date.now();
             const elapsed = now - lastInteractionRef.current;
-            const inactivityThreshold = 10000; // 10s
-            const abandonmentThreshold = 70000; // 10s + 60s countdown
+            const inactivityThreshold = 10000; 
+            const abandonmentThreshold = 70000; 
 
             if (elapsed > abandonmentThreshold) {
-                // Time up, abandon game
+
                 socket.emit('client_game_abandoned', { room_id: roomId });
                 console.log('Abandoned due to inactivity');
             } else if (elapsed > inactivityThreshold) {
-                // Warning Zone
+
                 const remaining = Math.ceil((abandonmentThreshold - elapsed) / 1000);
                 setInactivityWarning(remaining);
 
@@ -164,7 +169,7 @@ const Game = () => {
                     socket.emit('active_inactivity_start', { room_id: roomId });
                 }
             } else {
-                // Active Zone
+
                 if (inactivityWarningSent) {
                     setInactivityWarningSent(false);
                     socket.emit('active_inactivity_end', { room_id: roomId });
@@ -191,28 +196,49 @@ const Game = () => {
                 setGameStatus(g.status);
                 chess.load(g.fen);
 
+                const currentUserId = user?.id || user?._id;
+                const whitePlayerId = g.white_player?._id || g.white_player;
+                const blackPlayerId = g.black_player?._id || g.black_player;
+
                 let userSide = 'spectator';
-                const userId = user?.id || user?._id;
+                let isPlayer = false;
 
-                if (userId && g.white_player?._id?.toString() === userId.toString()) userSide = 'white';
-                else if (userId && g.black_player?._id?.toString() === userId.toString()) userSide = 'black';
-
-                console.log(" User ID:", userId, "UserSide:", userSide); // DEBUG
-
-                if (!isSpectatorFromURL && userSide === 'spectator' && g.status === 'waiting' && (!g.white_player || !g.black_player)) {
-                    const joinRes = await axios.post(`${API_URL}/api/game/join`, { room_id: roomId });
-                    if (joinRes.data.success) {
-                        userSide = joinRes.data.your_color;
-                        const updated = await axios.get(`${API_URL}/api/game/${roomId}`);
-                        setGame(updated.data.game);
-                        setIsSpectator(false);
+                if (currentUserId) {
+                    if (whitePlayerId && whitePlayerId.toString() === currentUserId.toString()) {
+                        userSide = 'white';
+                        isPlayer = true;
+                    } else if (blackPlayerId && blackPlayerId.toString() === currentUserId.toString()) {
+                        userSide = 'black';
+                        isPlayer = true;
                     }
-                } else if (userSide === 'spectator' || isSpectatorFromURL) {
-                    setIsSpectator(true);
                 }
 
-                setOrientation(userSide === 'black' ? 'black' : 'white');
-                console.log(" Orientation set to:", userSide === 'black' ? 'black' : 'white'); // DEBUG
+                console.log(" User ID:", currentUserId, "UserSide:", userSide); 
+
+                if (isPlayer) {
+                    setIsSpectator(false);
+                    setOrientation(userSide);
+                } else {
+
+                    if (!isSpectatorFromURL && g.status === 'waiting' && (!g.white_player || !g.black_player)) {
+                        const joinRes = await axios.post(`${API_URL}/api/game/join`, { room_id: roomId });
+                        if (joinRes.data.success) {
+                            userSide = joinRes.data.your_color;
+                            const updated = await axios.get(`${API_URL}/api/game/${roomId}`);
+                            setGame(updated.data.game);
+                            setIsSpectator(false);
+                            setOrientation(userSide);
+                        } else {
+                            setIsSpectator(true);
+                            setOrientation('white'); 
+                        }
+                    } else {
+                        setIsSpectator(true);
+                        setOrientation('white'); 
+                    }
+                }
+
+                if (userSide === 'black') setOrientation('black');
 
                 setLoading(false);
 
@@ -228,9 +254,56 @@ const Game = () => {
     }, [roomId, user, navigate, API_URL]);
 
     useEffect(() => {
+        if (tournamentId && gameStatus === 'completed') {
+            setShowTournamentModal(true);
+            fetchTournamentDetails();
+        }
+    }, [gameStatus, tournamentId]);
+
+    const fetchTournamentDetails = async () => {
+        if (!tournamentId) return;
+        try {
+
+            const lbRes = await axios.get(`${API_URL}/api/tournament/${tournamentId}/leaderboard`);
+            setLeaderboard(lbRes.data.leaderboard.map(item => ({
+                id: item.participant_id,
+                user: item.user,
+                total_points: item.total_points,
+                wins: item.wins,
+                draws: item.draws,
+                losses: item.losses
+            })));
+
+            const tRes = await axios.get(`${API_URL}/api/tournament/${tournamentId}`);
+            const t = tRes.data.tournament;
+            const currentUserId = user?.id || user?._id;
+            const adminId = t.admin?.id || t.admin?._id || t.admin;
+
+            setIsTournamentAdmin(adminId === currentUserId);
+
+            const roundMatches = tRes.data.current_matches;
+            const allComplete = roundMatches.every(m => m.status === 'completed');
+            setIsRoundComplete(allComplete);
+
+        } catch (error) {
+            console.error('Error fetching tournament details:', error);
+        }
+    };
+
+    const handleTournamentNextRound = async () => {
+        setAdvancingRound(true);
+        try {
+            await axios.post(`${API_URL}/api/tournament/${tournamentId}/next-round`);
+
+        } catch (err) {
+            alert(err.response?.data?.error || 'Failed to start next round');
+            setAdvancingRound(false);
+        }
+    };
+
+    useEffect(() => {
         if (!socket || !isConnected) return;
 
-        // Emit appropriate event based on spectator status
         if (isSpectator) {
             socket.emit('spectate_game', { room_id: roomId });
         } else {
@@ -368,6 +441,13 @@ const Game = () => {
             }
         });
 
+        socket.on('match_started', (data) => {
+            if (data.tournament_id === tournamentId) {
+                navigate(`/game/${data.room_id}?tournamentId=${tournamentId}`);
+                window.location.reload(); 
+            }
+        });
+
         return () => {
             if (isSpectator) {
                 socket.emit('leave_spectate', { room_id: roomId });
@@ -382,8 +462,35 @@ const Game = () => {
             socket.off('opponent_inactivity_warning');
             socket.off('opponent_inactivity_canceled');
             socket.off('spectator_joined');
+            socket.off('match_started');
         };
     }, [socket, isConnected, roomId, chess, isSpectator]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('chat_message', (data) => {
+            setChatMessages(prev => [...prev, data]);
+        });
+
+        socket.on('chat_system_message', (data) => {
+            setChatMessages(prev => [...prev, data]);
+        });
+
+        return () => {
+            socket.off('chat_message');
+            socket.off('chat_system_message');
+        };
+    }, [socket]);
+
+    const handleSendMessage = (message) => {
+        if (socket && message.trim()) {
+            socket.emit('send_chat_message', {
+                room_id: roomId,
+                message: message.trim()
+            });
+        }
+    };
 
     useEffect(() => {
         if (!socket) return;
@@ -611,6 +718,47 @@ const Game = () => {
                 </div>
             )}
 
+            {showTournamentModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content" style={{ minWidth: '500px', maxHeight: '80vh', overflowY: 'auto' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                            <h2 style={{ margin: 0 }}>Tournament Standings</h2>
+                            <button onClick={() => setShowTournamentModal(false)} className="btn-icon">
+                                <i className="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <div style={{ height: '300px', marginBottom: '20px', border: '1px solid var(--bg-tertiary)', borderRadius: '8px' }}>
+                            <TournamentLeaderboard participants={leaderboard} currentUserId={user?.id} />
+                        </div>
+
+                        <div className="modal-actions" style={{ flexDirection: 'column', gap: '10px' }}>
+                            {isTournamentAdmin && (
+                                <button
+                                    onClick={handleTournamentNextRound}
+                                    className="btn-primary w-full"
+                                    disabled={!isRoundComplete || advancingRound}
+                                    style={{ padding: '12px' }}
+                                >
+                                    {advancingRound ? (
+                                        <><i className="fa-solid fa-spinner fa-spin"></i> Starting Next Round...</>
+                                    ) : (
+                                        <><i className="fa-solid fa-forward"></i> Start Next Round</>
+                                    )}
+                                </button>
+                            )}
+
+                            <button
+                                onClick={() => navigate(`/tournament/${tournamentId}`)}
+                                className="btn-secondary w-full"
+                                style={{ padding: '12px' }}
+                            >
+                                <i className="fa-solid fa-trophy"></i> Back to Tournament Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {drawOffered && (
                 <div className="modal-overlay">
@@ -627,13 +775,19 @@ const Game = () => {
             <div className="game-grid">
                 <div className="board-wrapper">
                     <div className="player-info top">
-                        <div className="avatar-row">
+                        <div
+                            className="avatar-row"
+                            onClick={() => window.open(`/profile/${game?.black_player?.username}`, '_blank')}
+                            style={{ cursor: 'pointer' }}
+                        >
                             <img
                                 src={game?.black_player?.avatar || getAvatar(game?.black_player?.username || 'Opponent')}
                                 alt="black" className="avatar-sm"
+                                crossOrigin="anonymous"
                             />
                             <span>
-                                {game?.black_player?.username || 'Waiting for opponent...'}
+                                {game?.black_player?.username || 'Waiting...'}
+                                {isSpectator ? '' : (orientation === 'black' ? ' (You)' : '')}
                                 {game?.black_player?.rating ? ` (${game.black_player.rating})` : ''}
                             </span>
                             {abandonmentWarning && abandonmentWarning.player_color === 'black' && (
@@ -655,13 +809,19 @@ const Game = () => {
                     />
 
                     <div className="player-info bottom">
-                        <div className="avatar-row">
+                        <div
+                            className="avatar-row"
+                            onClick={() => window.open(`/profile/${game?.white_player?.username}`, '_blank')}
+                            style={{ cursor: 'pointer' }}
+                        >
                             <img
                                 src={game?.white_player?.avatar || getAvatar(game?.white_player?.username || 'You')}
                                 alt="white" className="avatar-sm"
+                                crossOrigin="anonymous"
                             />
                             <span>
-                                {game?.white_player?.username || 'You'}
+                                {game?.white_player?.username || 'Waiting...'}
+                                {isSpectator ? '' : (orientation === 'white' ? ' (You)' : '')}
                                 {game?.white_player?.rating ? ` (${game.white_player.rating})` : ''}
                             </span>
                             {abandonmentWarning && abandonmentWarning.player_color === 'white' && (
@@ -691,18 +851,42 @@ const Game = () => {
                                 <span>Spectator Mode</span>
                             </div>
                         )}
+
+                        {tournamentId && (
+                            <button
+                                onClick={() => navigate(`/tournament/${tournamentId}`)}
+                                className="btn-outline w-full"
+                                style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                            >
+                                <i className="fa-solid fa-arrow-left"></i> Back to Tournament
+                            </button>
+                        )}
+
                         {resultMessage && <div className="result-alert">{resultMessage}</div>}
                     </div>
 
                     <div className="controls">
                         {!isSpectator && gameStatus === 'active' && (
                             <>
-                                <button onClick={handleResign} className="btn btn-danger"> Resign</button>
-                                <button onClick={handleOfferDraw} className="btn btn-secondary">Offer Draw</button>
+                                <button onClick={handleResign} className="btn-danger">Resign</button>
+                                <button onClick={handleOfferDraw} className="btn-secondary">Offer Draw</button>
                             </>
                         )}
                         {gameStatus === 'completed' && (
-                            <button onClick={copyPGN} className="btn btn-primary"> Copy PGN</button>
+                            <>
+                                <button onClick={copyPGN} className="btn-primary">Copy PGN</button>
+                                <button
+                                    onClick={() => navigate(`/game/${game.id}/analysis`)}
+                                    className="btn-secondary"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #8b5cf6 0%, #fbbf24 100%)',
+                                        color: '#000',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    <i className="fa-solid fa-chart-line"></i> Analyze
+                                </button>
+                            </>
                         )}
                     </div>
 
@@ -736,7 +920,7 @@ const Game = () => {
                             {inviteStatus && <p>{inviteStatus}</p>}
                             <div className="friends-list">
                                 {friends
-                                    // .filter(f => f.status === 'online')
+
                                     .map(f => (
                                         <div key={f.id} className="friend-item">
                                             <span>{f.username}</span>
@@ -746,6 +930,13 @@ const Game = () => {
                             </div>
                         </div>
                     )}
+
+                    <ChatBox
+                        messages={chatMessages}
+                        onSendMessage={handleSendMessage}
+                        isSpectator={isSpectator}
+                        currentUser={user}
+                    />
                 </div>
             </div>
         </div>

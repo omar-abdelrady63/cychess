@@ -4,36 +4,55 @@ const Themes = () => {
     const { theme: currentTheme, changeTheme, themes, themeConfig } = useTheme();
 
     return (
-        <div className="container">
-            <h1 className="page-title">Choose Your Theme</h1>
-            <p className="page-subtitle">Select a color scheme that suits your style</p>
+        <div className="space-y-6 pb-8">
+            <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">Themes</h1>
+                <p className="text-text-secondary opacity-80 mt-1">Choose a color palette for the app</p>
+            </div>
 
-            <div className="themes-grid">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {themes.map((themeKey) => {
                     const themeInfo = themeConfig[themeKey];
                     const isActive = currentTheme === themeKey;
+                    const colors = themeInfo.colors || [];
 
                     return (
-                        <div
+                        <button
                             key={themeKey}
-                            className={`theme-card ${isActive ? 'active' : ''}`}
+                            type="button"
                             onClick={() => changeTheme(themeKey)}
+                            className={`
+                                rounded-2xl border-2 p-5 sm:p-6 text-left transition-all
+                                hover:border-white/30 hover:shadow-xl
+                                ${isActive
+                                    ? 'border-accent bg-accent/10 shadow-lg shadow-accent/10'
+                                    : 'border-white/10 bg-secondary/80 backdrop-blur-xl'
+                                }
+                            `}
                         >
-                            <h3>{themeInfo.name}</h3>
-                            <div className="color-preview">
-                                {themeInfo.colors.slice(0, 5).map((color, idx) => (
+                            <div className="flex items-center justify-between gap-3 mb-4">
+                                <h3 className="font-semibold text-text-primary text-lg">{themeInfo.name}</h3>
+                                {isActive && (
+                                    <span className="flex items-center gap-1.5 text-accent text-sm font-medium">
+                                        <i className="fa-solid fa-check" /> Active
+                                    </span>
+                                )}
+                            </div>
+                            {}
+                            <div className="flex flex-wrap gap-2">
+                                {colors.slice(0, 8).map((color, idx) => (
                                     <div
                                         key={idx}
-                                        className="color-swatch"
+                                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-white/20 shrink-0 shadow-inner"
                                         style={{ backgroundColor: color }}
                                         title={color}
                                     />
                                 ))}
                             </div>
-                            <button className="btn-outline w-full">
-                                {isActive ? <><i className="fa-solid fa-check" style={{ marginRight: '5px' }}></i> Active</> : 'Apply'}
-                            </button>
-                        </div>
+                            {!isActive && (
+                                <span className="mt-4 inline-block text-sm text-text-secondary opacity-80">Click to apply</span>
+                            )}
+                        </button>
                     );
                 })}
             </div>
@@ -42,4 +61,3 @@ const Themes = () => {
 };
 
 export default Themes;
-

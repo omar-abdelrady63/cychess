@@ -1,0 +1,245 @@
+
+
+.mystic-timeline-container {
+    width: 100%;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d1b3d 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.mystic-timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.mystic-timeline-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #8b5cf6 0%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+.mystic-timeline-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    padding: 0.5rem 0;
+}
+
+.mystic-timeline-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.mystic-timeline-scroll::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.mystic-timeline-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #8b5cf6 0%, #fbbf24 100%);
+    border-radius: 4px;
+}
+
+.mystic-timeline-scroll::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #a78bfa 0%, #fcd34d 100%);
+}
+
+.mystic-timeline-track {
+    display: flex;
+    gap: 0.5rem;
+    min-width: min-content;
+    padding: 0.25rem;
+}
+
+.timeline-move-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 60px;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.timeline-move-item:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-2px);
+}
+
+.timeline-move-item.active {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: #8b5cf6;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+}
+
+.timeline-move-number {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+}
+
+.timeline-move-icon {
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.timeline-move-item:hover .timeline-move-icon {
+    transform: scale(1.2);
+    filter: brightness(1.3) drop-shadow(0 0 8px currentColor);
+}
+
+.timeline-move-item.active .timeline-move-icon {
+    transform: scale(1.3);
+    filter: brightness(1.5) drop-shadow(0 0 12px currentColor);
+}
+
+.timeline-move-san {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+}
+
+.timeline-move-item[data-classification="brilliant"] {
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.timeline-move-item[data-classification="brilliant"]:hover,
+.timeline-move-item[data-classification="brilliant"].active {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.6), 0 0 30px rgba(251, 191, 36, 0.4);
+}
+
+.timeline-move-item[data-classification="great"] {
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.timeline-move-item[data-classification="great"]:hover,
+.timeline-move-item[data-classification="great"].active {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+}
+
+.timeline-move-item[data-classification="best"] {
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.timeline-move-item[data-classification="best"]:hover,
+.timeline-move-item[data-classification="best"].active {
+    border-color: #fbbf24;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+}
+
+.timeline-move-item[data-classification="excellent"] {
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.timeline-move-item[data-classification="excellent"]:hover,
+.timeline-move-item[data-classification="excellent"].active {
+    border-color: #3b82f6;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+}
+
+.timeline-move-item[data-classification="good"] {
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.timeline-move-item[data-classification="good"]:hover,
+.timeline-move-item[data-classification="good"].active {
+    border-color: #6366f1;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+}
+
+.timeline-move-item[data-classification="book"] {
+    border-color: rgba(253, 224, 71, 0.3);
+}
+
+.timeline-move-item[data-classification="book"]:hover,
+.timeline-move-item[data-classification="book"].active {
+    border-color: #fde047;
+    box-shadow: 0 0 20px rgba(253, 224, 71, 0.6);
+}
+
+.timeline-move-item[data-classification="inaccuracy"] {
+    border-color: rgba(249, 115, 22, 0.3);
+}
+
+.timeline-move-item[data-classification="inaccuracy"]:hover,
+.timeline-move-item[data-classification="inaccuracy"].active {
+    border-color: #f97316;
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
+}
+
+.timeline-move-item[data-classification="mistake"] {
+    border-color: rgba(251, 146, 60, 0.3);
+}
+
+.timeline-move-item[data-classification="mistake"]:hover,
+.timeline-move-item[data-classification="mistake"].active {
+    border-color: #fb923c;
+    box-shadow: 0 0 20px rgba(251, 146, 60, 0.6);
+}
+
+.timeline-move-item[data-classification="blunder"] {
+    border-color: rgba(220, 38, 38, 0.3);
+}
+
+.timeline-move-item[data-classification="blunder"]:hover,
+.timeline-move-item[data-classification="blunder"].active {
+    border-color: #dc2626;
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+}
+
+.timeline-move-item[data-classification="critical_blunder"] {
+    border-color: rgba(153, 27, 27, 0.3);
+}
+
+.timeline-move-item[data-classification="critical_blunder"]:hover,
+.timeline-move-item[data-classification="critical_blunder"].active {
+    border-color: #991b1b;
+    box-shadow: 0 0 20px rgba(153, 27, 27, 0.8), 0 0 30px rgba(220, 38, 38, 0.4);
+}
+
+.timeline-move-item[data-classification="missed_win"] {
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.timeline-move-item[data-classification="missed_win"]:hover,
+.timeline-move-item[data-classification="missed_win"].active {
+    border-color: #10b981;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+}
+
+@media (max-width: 768px) {
+    .mystic-timeline-container {
+        padding: 0.75rem;
+    }
+
+    .timeline-move-item {
+        min-width: 50px;
+        padding: 0.4rem;
+    }
+
+    .timeline-move-icon {
+        font-size: 1.2rem;
+    }
+
+    .timeline-move-number,
+    .timeline-move-san {
+        font-size: 0.65rem;
+    }
+}

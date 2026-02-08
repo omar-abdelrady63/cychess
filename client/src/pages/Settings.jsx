@@ -27,7 +27,6 @@ const Settings = () => {
         }
     };
 
-
     const handleDeleteAccount = async () => {
         if (!confirm('Are you SURE? This action cannot be undone. All your data will be lost forever.')) return;
 

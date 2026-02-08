@@ -124,21 +124,6 @@
     transform: translateY(-1px);
 }
 
-.btn-primary {
-    background-color: var(--accent);
-    color: var(--bg-primary);
-}
-
-.btn-secondary {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-}
-
-.btn-danger {
-    background-color: #ef4444;
-    color: white;
-}
-
 .moves-section {
     max-height: 200px;
     overflow-y: auto;

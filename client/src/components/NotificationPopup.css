@@ -1,7 +1,8 @@
 .notification-popup-container {
-    position: fixed;
-    top: 80px;
-    right: 20px;
+    position: fixed !important;
+    bottom: 160px !important;
+    right: 20px !important;
+    top: auto !important;
     z-index: 1000;
     display: flex;
     flex-direction: column;
@@ -35,6 +36,16 @@
 .notification-popup-message {
     color: var(--text-primary);
     font-size: 0.9rem;
+}
+
+.notification-popup-cta {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #4ade80;
+}
+
+.notification-popup-cta i {
+    margin-right: 4px;
 }
 
 .notification-close {

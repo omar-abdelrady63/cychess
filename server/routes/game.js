@@ -6,7 +6,6 @@ const Game = require('../models/Game');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 
-
 router.post('/create', auth, async (req, res) => {
     try {
         const { time_control, increment, preferred_color } = req.body;
@@ -57,7 +56,6 @@ router.post('/create', auth, async (req, res) => {
     }
 });
 
-
 router.post('/join', auth, async (req, res) => {
     try {
         const { room_id } = req.body;
@@ -95,6 +93,12 @@ router.post('/join', auth, async (req, res) => {
                 black_time: game.black_time,
                 fen: game.fen,
                 message: 'Game started!'
+            });
+
+            io.to(room_id).emit('chat_system_message', {
+                text: 'Game Started',
+                timestamp: new Date().toISOString(),
+                type: 'system'
             });
         }
 
@@ -164,6 +168,47 @@ router.get('/history', auth, async (req, res) => {
     }
 });
 
+router.get('/id/:gameId', auth, async (req, res) => {
+    try {
+        const game = await Game.findById(req.params.gameId)
+            .populate('white_player', 'username rating avatar')
+            .populate('black_player', 'username rating avatar')
+            .populate('winner', 'username');
+
+        if (!game) {
+            return res.status(404).json({ error: 'Game not found' });
+        }
+
+        const isWhite = game.white_player && game.white_player._id.toString() === req.userId.toString();
+        const isBlack = game.black_player && game.black_player._id.toString() === req.userId.toString();
+
+        res.json({
+            success: true,
+            is_player: isWhite || isBlack,
+            user_side: isWhite ? 'white' : (isBlack ? 'black' : 'spectator'),
+            game: {
+                id: game._id,
+                room_id: game.room_id,
+                white_player: game.white_player,
+                black_player: game.black_player,
+                fen: game.fen,
+                pgn: game.pgn,
+                status: game.status,
+                white_time: game.white_time,
+                black_time: game.black_time,
+                time_control: game.time_control,
+                current_turn: game.current_turn,
+                last_move_time: game.last_move_time,
+                result: game.result,
+                termination_reason: game.termination_reason
+            }
+        });
+
+    } catch (error) {
+        console.error('Get game by ID error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 router.get('/:roomId', auth, async (req, res) => {
     try {

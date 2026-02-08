@@ -94,7 +94,6 @@ router.post('/verify', [
     }
 });
 
-
 router.post('/login', [
     body('identifier').notEmpty().withMessage('Email or username#discriminator required'),
     body('password').notEmpty().withMessage('Password required')

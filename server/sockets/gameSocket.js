@@ -2,6 +2,7 @@ const { Chess } = require('chess.js');
 const Game = require('../models/Game');
 const User = require('../models/User');
 const { calculateEloRating } = require('../utils/elo');
+const { updateTournamentStandings } = require('../utils/tournamentPairing');
 
 async function updateRatings(game) {
     if (!game.result || !game.white_player || !game.black_player) return null;
@@ -49,6 +50,14 @@ const abandonmentTimers = new Map();
 
 const roomSpectators = new Map();
 
+const matchmakingQueue = new Map();
+let matchmakingInterval = null;
+
+const MAX_RATING_RANGE = 1000; 
+const INITIAL_RANGE = 50; 
+const RANGE_EXPANSION = 50; 
+const MATCHING_INTERVAL = 2000; 
+
 async function broadcastStatusToFriends(io, userId, newStatus) {
     try {
         const user = await User.findById(userId);
@@ -64,6 +73,130 @@ async function broadcastStatusToFriends(io, userId, newStatus) {
     } catch (err) {
         console.error('Error broadcasting status:', err);
     }
+}
+
+function broadcastSystemMessage(io, room_id, message) {
+    io.to(room_id).emit('chat_system_message', {
+        text: message,
+        timestamp: new Date().toISOString(),
+        type: 'system'
+    });
+}
+
+async function processMatchmakingQueue(io) {
+    if (matchmakingQueue.size < 2) return;
+
+    const queueArray = Array.from(matchmakingQueue.entries());
+    const matched = new Set();
+
+    for (const [userId, userData] of queueArray) {
+        if (matched.has(userId)) continue;
+
+        userData.currentRange += RANGE_EXPANSION;
+
+        if (userData.currentRange > MAX_RATING_RANGE) {
+            io.to(`user_${userId}`).emit('match_cancelled', {
+                message: 'No players found in your rating range'
+            });
+            matchmakingQueue.delete(userId);
+            console.log(`❌ Matchmaking cancelled for user ${userId} - max range exceeded`);
+            continue;
+        }
+
+        for (const [otherUserId, otherUserData] of queueArray) {
+            if (userId === otherUserId || matched.has(otherUserId)) continue;
+
+            if (userData.timeControl !== otherUserData.timeControl) continue;
+
+            const ratingDiff = Math.abs(userData.rating - otherUserData.rating);
+            const withinUser1Range = ratingDiff <= userData.currentRange;
+            const withinUser2Range = ratingDiff <= otherUserData.currentRange;
+
+            if (withinUser1Range && withinUser2Range) {
+
+                matched.add(userId);
+                matched.add(otherUserId);
+
+                try {
+                    await createMatchmakingGame(io, userId, otherUserId, userData.timeControl);
+                } catch (error) {
+                    console.error('Error creating matchmaking game:', error);
+                }
+
+                break;
+            }
+        }
+
+        if (!matched.has(userId)) {
+            const minRating = userData.rating - userData.currentRange;
+            const maxRating = userData.rating + userData.currentRange;
+            io.to(`user_${userId}`).emit('rating_range_update', {
+                minRating,
+                maxRating,
+                currentRange: userData.currentRange
+            });
+        }
+    }
+
+    for (const userId of matched) {
+        matchmakingQueue.delete(userId);
+    }
+}
+
+async function createMatchmakingGame(io, userId1, userId2, timeControl) {
+    const { v4: uuidv4 } = require('uuid');
+
+    const isUser1White = Math.random() < 0.5;
+    const whitePlayerId = isUser1White ? userId1 : userId2;
+    const blackPlayerId = isUser1White ? userId2 : userId1;
+
+    const totalSeconds = timeControl * 60;
+
+    const game = new Game({
+        room_id: uuidv4(),
+        white_player: whitePlayerId,
+        black_player: blackPlayerId,
+        time_control: {
+            initial: totalSeconds,
+            increment: 0
+        },
+        white_time: totalSeconds,
+        black_time: totalSeconds,
+        status: 'active',
+        last_move_time: new Date()
+    });
+
+    await game.save();
+    await game.populate('white_player', 'username rating avatar');
+    await game.populate('black_player', 'username rating avatar');
+
+    io.to(`user_${userId1}`).emit('match_found', {
+        room_id: game.room_id,
+        your_color: isUser1White ? 'white' : 'black',
+        opponent: isUser1White ? game.black_player : game.white_player,
+        white_player: game.white_player,
+        black_player: game.black_player
+    });
+
+    io.to(`user_${userId2}`).emit('match_found', {
+        room_id: game.room_id,
+        your_color: isUser1White ? 'black' : 'white',
+        opponent: isUser1White ? game.white_player : game.black_player,
+        white_player: game.white_player,
+        black_player: game.black_player
+    });
+
+    console.log(`✓ Match created: ${game.room_id} - ${whitePlayerId} (white) vs ${blackPlayerId} (black)`);
+}
+
+function startMatchmakingInterval(io) {
+    if (matchmakingInterval) return;
+
+    matchmakingInterval = setInterval(() => {
+        processMatchmakingQueue(io);
+    }, MATCHING_INTERVAL);
+
+    console.log('✓ Matchmaking interval started');
 }
 
 function registerGameSocket(io) {
@@ -91,6 +224,59 @@ function registerGameSocket(io) {
                 } catch (err) {
                     console.error('Error checking for active game:', err);
                 }
+
+                startMatchmakingInterval(io);
+            }
+        });
+
+        socket.on('join_matchmaking_queue', async (data) => {
+            const { timeControl } = data;
+
+            if (!socket.userId) {
+                socket.emit('error', { message: 'Not authenticated' });
+                return;
+            }
+
+            try {
+                const user = await User.findById(socket.userId);
+                if (!user) {
+                    socket.emit('error', { message: 'User not found' });
+                    return;
+                }
+
+                matchmakingQueue.set(socket.userId.toString(), {
+                    rating: user.rating,
+                    timeControl: parseInt(timeControl),
+                    joinedAt: new Date(),
+                    currentRange: INITIAL_RANGE
+                });
+
+                await User.findByIdAndUpdate(socket.userId, { status: 'online' });
+
+                console.log(`✓ User ${socket.userId} joined matchmaking queue (rating: ${user.rating}, time: ${timeControl}min)`);
+
+                socket.emit('queue_joined', {
+                    message: 'Searching for opponent...',
+                    initialRange: INITIAL_RANGE
+                });
+
+            } catch (error) {
+                console.error('Join matchmaking queue error:', error);
+                socket.emit('error', { message: 'Failed to join queue' });
+            }
+        });
+
+        socket.on('leave_matchmaking_queue', async () => {
+            if (!socket.userId) return;
+
+            const userId = socket.userId.toString();
+            if (matchmakingQueue.has(userId)) {
+                matchmakingQueue.delete(userId);
+                console.log(`✓ User ${userId} left matchmaking queue`);
+
+                socket.emit('queue_left', {
+                    message: 'Matchmaking cancelled'
+                });
             }
         });
 
@@ -139,6 +325,13 @@ function registerGameSocket(io) {
                     current_turn: game.current_turn,
                     last_move_time: game.last_move_time
                 });
+
+                if (game.status === 'active' && game.white_player && game.black_player) {
+                    const joiningUser = await User.findById(socket.userId);
+                    if (joiningUser) {
+                        broadcastSystemMessage(io, room_id, `${joiningUser.username} joined the game`);
+                    }
+                }
 
                 const existingTimer = abandonmentTimers.get(room_id);
                 if (existingTimer) {
@@ -261,7 +454,6 @@ function registerGameSocket(io) {
                         io.to(room_id).emit('abandonment_canceled');
                     }
                 }
-                // -----------------------------------------------
 
                 const now = new Date();
                 let timeElapsed = 0;
@@ -384,6 +576,22 @@ function registerGameSocket(io) {
                 }
 
                 if (game.status === 'completed') {
+
+                    try {
+                        const tournamentUpdate = await updateTournamentStandings(game._id);
+                        if (tournamentUpdate) {
+                            io.to(`tournament_${tournamentUpdate.tournamentId}`).emit('tournament_match_completed', {
+                                match_id: tournamentUpdate.matchId,
+                                result: game.result
+                            });
+                            io.to(`tournament_${tournamentUpdate.tournamentId}`).emit('tournament_leaderboard_update', {
+                                tournament_id: tournamentUpdate.tournamentId
+                            });
+                        }
+                    } catch (err) {
+                        console.error('Error updating tournament standings:', err);
+                    }
+
                     const whiteId = game.white_player?._id || game.white_player;
                     const blackId = game.black_player?._id || game.black_player;
 
@@ -432,6 +640,21 @@ function registerGameSocket(io) {
 
                 const newRatings = await updateRatings(game);
 
+                try {
+                    const tournamentUpdate = await updateTournamentStandings(game._id);
+                    if (tournamentUpdate) {
+                        io.to(`tournament_${tournamentUpdate.tournamentId}`).emit('tournament_match_completed', {
+                            match_id: tournamentUpdate.matchId,
+                            result: game.result
+                        });
+                        io.to(`tournament_${tournamentUpdate.tournamentId}`).emit('tournament_leaderboard_update', {
+                            tournament_id: tournamentUpdate.tournamentId
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error updating tournament standings:', err);
+                }
+
                 console.log(`Broadcasting game_over to room: ${room_id}, result: ${game.result}`);
 
                 io.to(room_id).emit('game_over', {
@@ -440,6 +663,11 @@ function registerGameSocket(io) {
                     winner: game.winner,
                     new_ratings: newRatings
                 });
+
+                const resigningUser = await User.findById(socket.userId);
+                if (resigningUser) {
+                    broadcastSystemMessage(io, room_id, `${resigningUser.username} resigned`);
+                }
 
                 if (abandonmentTimers.has(room_id)) {
                     clearTimeout(abandonmentTimers.get(room_id).timeout);
@@ -455,6 +683,10 @@ function registerGameSocket(io) {
         socket.on('offer_draw', async (data) => {
             const { room_id } = data;
             try {
+                const sender = await User.findById(socket.userId);
+                if (sender) {
+                    broadcastSystemMessage(io, room_id, `${sender.username} offered a draw`);
+                }
                 socket.to(room_id).emit('draw_offered', { sender_id: socket.userId });
             } catch (error) {
                 console.error('Offer draw error:', error);
@@ -476,11 +708,28 @@ function registerGameSocket(io) {
 
                 const newRatings = await updateRatings(game);
 
+                try {
+                    const tournamentUpdate = await updateTournamentStandings(game._id);
+                    if (tournamentUpdate) {
+                        io.to(`tournament_${tournamentUpdate.tournamentId}`).emit('tournament_match_completed', {
+                            match_id: tournamentUpdate.matchId,
+                            result: game.result
+                        });
+                        io.to(`tournament_${tournamentUpdate.tournamentId}`).emit('tournament_leaderboard_update', {
+                            tournament_id: tournamentUpdate.tournamentId
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error updating tournament standings:', err);
+                }
+
                 io.to(room_id).emit('game_over', {
                     result: 'draw',
                     reason: 'agreement',
                     new_ratings: newRatings
                 });
+
+                broadcastSystemMessage(io, room_id, 'Draw accepted by agreement');
 
                 if (abandonmentTimers.has(room_id)) {
                     clearTimeout(abandonmentTimers.get(room_id).timeout);
@@ -500,6 +749,38 @@ function registerGameSocket(io) {
         socket.on('active_inactivity_end', (data) => {
             const { room_id } = data;
             socket.to(room_id).emit('opponent_inactivity_canceled');
+        });
+
+        socket.on('send_chat_message', async (data) => {
+            const { room_id, message } = data;
+            try {
+                const game = await Game.findOne({ room_id });
+                if (!game) return;
+
+                const whitePlayerId = game.white_player?._id || game.white_player;
+                const blackPlayerId = game.black_player?._id || game.black_player;
+
+                const isWhite = whitePlayerId && whitePlayerId.toString() === socket.userId?.toString();
+                const isBlack = blackPlayerId && blackPlayerId.toString() === socket.userId?.toString();
+
+                if (!isWhite && !isBlack) {
+                    console.log('User is not a player in this game, cannot send chat messages');
+                    return;
+                }
+
+                const sender = await User.findById(socket.userId);
+                if (!sender) return;
+
+                io.to(room_id).emit('chat_message', {
+                    senderId: socket.userId.toString(),
+                    senderName: sender.username,
+                    text: message,
+                    timestamp: new Date().toISOString(),
+                    type: 'player'
+                });
+            } catch (error) {
+                console.error('Send chat message error:', error);
+            }
         });
 
         socket.on('client_game_abandoned', async (data) => {
@@ -533,6 +814,11 @@ function registerGameSocket(io) {
                     new_ratings: newRatings
                 });
 
+                const abandoningUser = await User.findById(socket.userId);
+                if (abandoningUser) {
+                    broadcastSystemMessage(io, room_id, `${abandoningUser.username} abandoned the game`);
+                }
+
                 if (abandonmentTimers.has(room_id)) {
                     clearTimeout(abandonmentTimers.get(room_id).timeout);
                     abandonmentTimers.delete(room_id);
@@ -545,9 +831,31 @@ function registerGameSocket(io) {
             }
         });
 
+        socket.on('join_tournament_room', (data) => {
+            const { tournament_id } = data;
+            if (tournament_id) {
+                socket.join(`tournament_${tournament_id}`);
+                console.log(`✓ User ${socket.userId} joined tournament room: ${tournament_id}`);
+            }
+        });
+
+        socket.on('leave_tournament_room', (data) => {
+            const { tournament_id } = data;
+            if (tournament_id) {
+                socket.leave(`tournament_${tournament_id}`);
+                console.log(`✓ User ${socket.userId} left tournament room: ${tournament_id}`);
+            }
+        });
 
         socket.on('disconnect', async () => {
             if (socket.userId) {
+
+                const userId = socket.userId.toString();
+                if (matchmakingQueue.has(userId)) {
+                    matchmakingQueue.delete(userId);
+                    console.log(`✓ User ${userId} removed from matchmaking queue (disconnected)`);
+                }
+
                 if (socket.isSpectator && socket.currentRoom) {
                     if (roomSpectators.has(socket.currentRoom)) {
                         roomSpectators.get(socket.currentRoom).delete(socket.userId.toString());

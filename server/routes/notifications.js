@@ -4,7 +4,6 @@ const auth = require('../middleware/auth');
 const Notification = require('../models/Notification');
 const Game = require('../models/Game');
 
-
 router.get('/', auth, async (req, res) => {
     try {
         const notifications = await Notification.find({ user: req.userId })

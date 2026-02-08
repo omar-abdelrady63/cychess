@@ -5,7 +5,6 @@ const User = require('../models/User');
 const FriendRequest = require('../models/FriendRequest');
 const Notification = require('../models/Notification');
 
-
 router.get('/search', auth, async (req, res) => {
     try {
         const { q } = req.query;
@@ -71,7 +70,6 @@ router.get('/search', auth, async (req, res) => {
     }
 });
 
-
 router.post('/send-request', auth, async (req, res) => {
     try {
         const { receiver_id } = req.body;
@@ -134,7 +132,6 @@ router.post('/send-request', auth, async (req, res) => {
     }
 });
 
-
 router.post('/accept/:id', auth, async (req, res) => {
     try {
         const friendRequest = await FriendRequest.findById(req.params.id);
@@ -177,7 +174,6 @@ router.post('/accept/:id', auth, async (req, res) => {
     }
 });
 
-
 router.post('/reject/:id', auth, async (req, res) => {
     try {
         const friendRequest = await FriendRequest.findById(req.params.id);
@@ -201,7 +197,6 @@ router.post('/reject/:id', auth, async (req, res) => {
     }
 });
 
-
 router.get('/', auth, async (req, res) => {
     try {
         const friends = await req.user.getFriends();
@@ -223,7 +218,6 @@ router.get('/', auth, async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
-
 
 router.get('/pending', auth, async (req, res) => {
     try {
@@ -266,7 +260,6 @@ router.delete('/delete/:id', auth, async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
-
 
 router.post('/block/:id', auth, async (req, res) => {
     try {

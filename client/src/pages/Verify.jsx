@@ -33,15 +33,15 @@ const Verify = () => {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h1>Verify Your Email</h1>
-                <p className="subtitle">Enter the 6-digit code sent to {email}</p>
+                <h1>Verify your email</h1>
+                <p className="text-text-secondary opacity-80 text-center mb-6">Enter the 6-digit code sent to {email}</p>
 
                 {error && <div className="alert alert-error">{error}</div>}
-                {success && <div className="alert alert-success">Email verified! Redirecting to login...</div>}
+                {success && <div className="alert alert-success">Email verified. Redirecting to login…</div>}
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Verification Code</label>
+                        <label>Verification code</label>
                         <input
                             type="text"
                             value={code}
@@ -50,12 +50,12 @@ const Verify = () => {
                             required
                             maxLength={6}
                             pattern="[0-9]{6}"
-                            style={{ fontSize: '24px', textAlign: 'center', letterSpacing: '8px' }}
+                            className="text-2xl text-center tracking-[0.4em]"
                         />
                     </div>
 
                     <button type="submit" className="btn-primary w-full" disabled={loading || success}>
-                        {loading ? 'Verifying...' : 'Verify Email'}
+                        {loading ? 'Verifying…' : 'Verify email'}
                     </button>
                 </form>
             </div>
