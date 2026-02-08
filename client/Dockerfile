@@ -28,5 +28,14 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Expose port 80
 EXPOSE 80
 
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
+
+# Add labels for identification
+LABEL maintainer="CyChess Team"
+LABEL description="CyChess React Frontend with Nginx"
+LABEL version="1.0"
+
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

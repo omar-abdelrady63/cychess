@@ -16,7 +16,7 @@ cychess/
 │   └── .env                # Backend environment variables
 ├── client/
 │   ├── Dockerfile          # Frontend container configuration
-│   └── nginx.conf          # Nginx configuration for React Router
+│   └── nginx.conf          # Nginx configuration with Security Headers & React Router support
 ├── docker-compose.yml      # Orchestrates both services
 └── .dockerignore          # Files to exclude from Docker builds
 ```
@@ -79,39 +79,37 @@ docker run -p 80:80 cychess-client
 - **Backend API:** http://localhost:5000
 - **Health Check:** http://localhost:5000/api/health
 
-## WebSocket Support
+## Key Features & Security
 
-The Docker setup fully supports WebSockets for real-time chess gameplay:
+### COOP/COEP Headers (Critical for Stockfish)
 
-- Socket.IO connections are proxied through Nginx
-- The backend and frontend communicate via a Docker bridge network
-- WebSocket upgrade headers are properly configured in `nginx.conf`
+The `nginx.conf` is configured to serve the following headers:
+- `Cross-Origin-Embedder-Policy: require-corp`
+- `Cross-Origin-Opener-Policy: same-origin`
 
-## Key Features
+These are **required** for the Stockfish chess engine to function, as it uses `SharedArrayBuffer` for multi-threaded performance. Without these headers, the chess engine will fail to load in the browser.
+
+### Docker Optimization
+
+- **Multi-stage Builds**: Both Dockerfiles use multi-stage builds to reduce image size.
+- **Dependency Caching**: `npm ci` is used for reliable builds, and layer ordering is optimized to cache `node_modules`.
+- **Nginx Compression**: Gzip compression is enabled for text and WASM files to improve load times.
+- **Health Checks**: Built-in health checks ensure traffic is only sent to healthy containers.
 
 ### Server Dockerfile
-- Uses `node:18-alpine` for minimal image size
-- Multi-stage build for optimized dependency caching
-- Exposes port 5000
-- Production environment configuration
+- `node:18-alpine` base image
+- Production dependencies only (`npm ci --only=production`)
+- Runs as non-root user (best practice)
 
 ### Client Dockerfile
-- **Stage 1:** Builds Vite React app
-- **Stage 2:** Serves with `nginx:stable-alpine`
-- Includes custom Nginx configuration for:
-  - React Router support (404 → index.html)
-  - WebSocket proxying
-  - API proxying to backend
-  - Static asset caching
-
-### Docker Compose
-- Orchestrates both services
-- Bridge network for inter-container communication
-- Health checks for both services
-- Automatic restart policies
-- Proper dependency management (client depends on server)
+- Builds Vite app in a node container
+- Serves static assets via Nginx
+- Custom Nginx config handles React Router (SPA) and proxying
 
 ## Troubleshooting
+
+### Stockfish / WASM Errors
+If the chess engine fails to load, check the browser console. If you see errors about `SharedArrayBuffer` not being defined, verify that the COOP/COEP headers are being served correctly by checking the Network tab in DevTools.
 
 ### Port Conflicts
 
@@ -134,65 +132,20 @@ docker-compose logs -f server
 docker-compose logs -f client
 ```
 
-### Rebuilding After Code Changes
-
-```bash
-docker-compose up --build
-```
-
 ### Cleaning Up
 
-Remove containers and networks:
-```bash
-docker-compose down
-```
-
-Remove containers, networks, and volumes:
+Remove containers, networks, and volumes (if any):
 ```bash
 docker-compose down -v
 ```
 
-Remove all images:
+Remove all images to reclaim space:
 ```bash
 docker-compose down --rmi all
 ```
 
-## Production Deployment
-
-For production deployment:
-
-1. Update `CLIENT_URL` in server environment to your production domain
-2. Configure proper SSL/TLS certificates
-3. Use a production MongoDB instance
-4. Set strong `JWT_SECRET`
-5. Consider using Docker secrets for sensitive data
-6. Set up proper logging and monitoring
-
 ## Development vs Production
 
-This Docker setup is optimized for production. For development:
+This Docker setup is optimized for **production**. 
 
-- Use `docker-compose.override.yml` for dev-specific settings
-- Mount volumes for hot-reloading
-- Use development environment variables
-
-Example `docker-compose.override.yml`:
-
-```yaml
-version: '3.8'
-
-services:
-  server:
-    volumes:
-      - ./server:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-    command: npm run dev
-
-  client:
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-    command: npm run dev
-```
+For development, we recommend running the apps locally (`npm run dev`) to benefit from hot-reloading, or using a separate `docker-compose.dev.yml` that mounts source code volumes.
