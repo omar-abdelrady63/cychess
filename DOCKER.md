@@ -117,8 +117,8 @@ If port 80 or 5000 is already in use, modify `docker-compose.yml`:
 
 ```yaml
 ports:
-  - "8080:80"  # Change frontend to port 8080
-  - "5001:5000"  # Change backend to port 5001
+  - "8080:80"  
+  - "5001:5000" 
 ```
 
 ### Viewing Logs
