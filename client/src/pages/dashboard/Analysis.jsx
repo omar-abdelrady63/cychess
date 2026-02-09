@@ -55,85 +55,144 @@ const Analysis = () => {
     };
 
     return (
-        <div className="max-w-3xl mx-auto pb-8">
-            {}
-            <div className="mb-8">
-                <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">Analysis</h1>
-                <p className="text-text-secondary opacity-80 mt-1">
-                    Analyze a game (PGN) or a position (FEN) with the engine.
+        <div className="max-w-[1600px] mx-auto pb-12">
+            <div className="text-center mb-12">
+                <h1 className="text-4xl sm:text-5xl font-black text-text-primary mb-4 tracking-tight">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent/60">Game Analysis</span>
+                </h1>
+                <p className="text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed opacity-80">
+                    Analyze your games, test positions, and improve your chess understanding with our powerful engine.
                 </p>
             </div>
 
-            {}
-            <div className="flex rounded-xl bg-black/30 p-1 border border-white/10 mb-6">
-                <button
-                    type="button"
-                    onClick={() => { setActiveTab('pgn'); setError(''); }}
-                    className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${activeTab === 'pgn' ? 'bg-white/10 text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}
-                >
-                    Game (PGN)
-                </button>
-                <button
-                    type="button"
-                    onClick={() => { setActiveTab('fen'); setError(''); }}
-                    className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${activeTab === 'fen' ? 'bg-white/10 text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}
-                >
-                    Position (FEN)
-                </button>
-            </div>
-
-            {}
-            <div className="rounded-2xl border border-white/10 bg-secondary/80 backdrop-blur-xl shadow-xl p-6 sm:p-8">
-                {activeTab === 'pgn' ? (
-                    <div className="space-y-4">
-                        <label className="block text-sm font-medium text-text-primary">Paste your game in PGN format</label>
-                        <textarea
-                            value={pgn}
-                            onChange={(e) => setPgn(e.target.value)}
-                            placeholder={'[Event "Game"]\n1. e4 e5 2. Nf3 Nc6 3. Bb5...'}
-                            className="w-full min-h-[220px] rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-text-primary placeholder:text-white/40 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none resize-y font-mono text-sm"
-                        />
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+                <div className="bg-secondary/80 backdrop-blur-xl rounded-3xl border border-white/10 p-8 shadow-2xl">
+                    <div className="flex space-x-2 bg-black/40 p-1.5 rounded-xl mb-8 border border-white/10 w-fit mx-auto sm:mx-0">
                         <button
                             type="button"
-                            onClick={() => handleAnalysis('pgn')}
-                            disabled={analyzing || !pgn.trim()}
-                            className="btn-primary w-full flex items-center justify-center gap-2"
+                            onClick={() => { setActiveTab('pgn'); setError(''); }}
+                            className={`px-6 py-3 rounded-lg text-sm font-bold transition-all ${activeTab === 'pgn'
+                                ? 'bg-accent text-white shadow-lg shadow-accent/25'
+                                : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
+                                }`}
                         >
-                            {analyzing ? <i className="fa-solid fa-circle-notch fa-spin" /> : <i className="fa-solid fa-play" />}
-                            {analyzing ? 'Starting…' : 'Analyze game'}
+                            PGN Analysis
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setActiveTab('fen'); setError(''); }}
+                            className={`px-6 py-3 rounded-lg text-sm font-bold transition-all ${activeTab === 'fen'
+                                ? 'bg-accent text-white shadow-lg shadow-accent/25'
+                                : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
+                                }`}
+                        >
+                            FEN Analysis
                         </button>
                     </div>
-                ) : (
-                    <div className="space-y-4">
-                        <label className="block text-sm font-medium text-text-primary">Enter a position in FEN notation</label>
-                        <input
-                            type="text"
-                            value={fen}
-                            onChange={(e) => setFen(e.target.value)}
-                            placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-                            className="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-text-primary placeholder:text-white/40 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none font-mono text-sm"
-                        />
-                        <p className="text-xs text-text-secondary opacity-80">
-                            Forsyth–Edwards Notation describes a single board position. The engine will suggest the best continuation.
+
+                    <div className="space-y-8">
+                        {activeTab === 'pgn' ? (
+                            <div className="space-y-4">
+                                <label className="block text-sm font-bold text-text-secondary uppercase tracking-wider pl-1">
+                                    PGN Data
+                                </label>
+                                <textarea
+                                    value={pgn}
+                                    onChange={(e) => setPgn(e.target.value)}
+                                    placeholder={'[Event "Game"]\n1. e4 e5 2. Nf3 Nc6 3. Bb5...'}
+                                    className="w-full h-80 rounded-2xl bg-black/40 border border-white/10 p-6 text-text-primary placeholder:text-text-secondary/50 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all resize-none font-mono text-sm leading-relaxed"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => handleAnalysis('pgn')}
+                                    disabled={analyzing || !pgn.trim()}
+                                    className="btn-primary w-full py-5 rounded-2xl font-bold text-lg shadow-xl shadow-accent/20 hover:shadow-accent/40 hover:scale-[1.01] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                                >
+                                    {analyzing ? (
+                                        <>
+                                            <i className="fa-solid fa-circle-notch fa-spin" />
+                                            Starting Analysis...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fa-solid fa-play" />
+                                            Start Analysis
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <label className="block text-sm font-bold text-text-secondary uppercase tracking-wider pl-1">
+                                    FEN String
+                                </label>
+                                <input
+                                    type="text"
+                                    value={fen}
+                                    onChange={(e) => setFen(e.target.value)}
+                                    placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+                                    className="w-full rounded-2xl bg-black/40 border border-white/10 p-6 text-text-primary placeholder:text-text-secondary/50 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all font-mono text-sm leading-relaxed"
+                                />
+                                <p className="text-sm text-text-secondary opacity-80 px-1">
+                                    Forsyth–Edwards Notation describes a single board position.
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => handleAnalysis('fen')}
+                                    disabled={analyzing || !fen.trim()}
+                                    className="bg-accent hover:bg-accent-hover text-white w-full py-5 rounded-2xl font-bold text-lg shadow-xl shadow-accent/20 hover:shadow-accent/40 hover:scale-[1.01] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                                >
+                                    {analyzing ? (
+                                        <>
+                                            <i className="fa-solid fa-circle-notch fa-spin" />
+                                            Starting Analysis...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fa-solid fa-chess-board" />
+                                            Start Analysis
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        )}
+
+                        {error && (
+                            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm flex items-center gap-3 animate-pulse">
+                                <i className="fa-solid fa-circle-exclamation shrink-0 text-lg" />
+                                <span className="font-medium">{error}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Info / Decoration Side */}
+                <div className="hidden xl:flex flex-col gap-8">
+                    <div className="bg-secondary/40 backdrop-blur-xl rounded-3xl border border-white/10 p-12 relative overflow-hidden min-h-[400px] flex flex-col justify-center text-center group hover:bg-secondary/60 transition-colors duration-500">
+                        <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <i className="fa-solid fa-chart-line text-[12rem] text-white/5 absolute -top-10 -right-10 rotate-12 transition-transform duration-700 group-hover:rotate-6 group-hover:scale-110" />
+
+                        <h3 className="text-4xl font-black text-white mb-6 relative z-10 drop-shadow-lg">Deep Insights</h3>
+                        <p className="text-white/70 text-xl leading-relaxed relative z-10 max-w-md mx-auto">
+                            Uncover the hidden truths of your games. Our engine sees 20 moves ahead to find the winning variation you missed.
                         </p>
-                        <button
-                            type="button"
-                            onClick={() => handleAnalysis('fen')}
-                            disabled={analyzing || !fen.trim()}
-                            className="btn-primary w-full flex items-center justify-center gap-2"
-                        >
-                            {analyzing ? <i className="fa-solid fa-circle-notch fa-spin" /> : <i className="fa-solid fa-chess-board" />}
-                            {analyzing ? 'Starting…' : 'Analyze position'}
-                        </button>
                     </div>
-                )}
 
-                {error && (
-                    <div className="mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm flex items-center gap-2">
-                        <i className="fa-solid fa-circle-exclamation shrink-0" />
-                        {error}
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="bg-secondary/60 rounded-3xl p-8 border border-white/5 flex flex-col items-center justify-center text-center gap-4 hover:bg-secondary/80 transition-colors">
+                            <div className="w-16 h-16 rounded-2xl bg-green-500/20 flex items-center justify-center text-green-400 mb-2 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
+                                <i className="fa-solid fa-check text-2xl" />
+                            </div>
+                            <span className="text-xl font-bold text-text-primary">Accuracy</span>
+                        </div>
+                        <div className="bg-secondary/60 rounded-3xl p-8 border border-white/5 flex flex-col items-center justify-center text-center gap-4 hover:bg-secondary/80 transition-colors">
+                            <div className="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 mb-2 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+                                <i className="fa-solid fa-bolt text-2xl" />
+                            </div>
+                            <span className="text-xl font-bold text-text-primary">Speed</span>
+                        </div>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );

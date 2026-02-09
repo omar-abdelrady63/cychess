@@ -16,7 +16,7 @@ export const ThemeProvider = ({ children }) => {
         const savedTheme = localStorage.getItem('theme');
 
         if (!savedTheme) {
-            return 'olive';
+            return 'oceanDeep';
         }
 
         const themeKeys = getThemeKeys();

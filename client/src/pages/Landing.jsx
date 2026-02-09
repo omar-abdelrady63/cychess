@@ -26,9 +26,14 @@ const Landing = () => {
                 </p>
                 <div style={{ display: 'flex', gap: 'var(--spacing-md)', justifyContent: 'center', flexWrap: 'wrap', padding: '0 var(--spacing-md)' }}>
                     {isAuthenticated ? (
-                        <Link to="/dashboard" className="btn-primary" style={{ padding: 'var(--spacing-md) var(--spacing-xl)', fontSize: '1.2rem' }}>
-                            Go to Dashboard
-                        </Link>
+                        <>
+                            <Link to="/dashboard" className="btn-primary" style={{ padding: 'var(--spacing-md) var(--spacing-xl)', fontSize: '1.2rem' }}>
+                                Go to Dashboard
+                            </Link>
+                            <a href="https://cychess-docs.vercel.app/docs/overview" className="btn-outline" style={{ padding: 'var(--spacing-md) var(--spacing-xl)', fontSize: '1.2rem', marginLeft: 'var(--spacing-md)' }} target="_blank" rel="noopener noreferrer">
+                                <i className="fa-solid fa-book" style={{ marginRight: '8px' }}></i> Docs
+                            </a>
+                        </>
                     ) : (
                         <>
                             <Link to="/register" className="btn-primary" style={{ padding: 'var(--spacing-md) var(--spacing-xl)', fontSize: '1.2rem' }}>
@@ -37,6 +42,9 @@ const Landing = () => {
                             <Link to="/login" className="btn-outline" style={{ padding: 'var(--spacing-md) var(--spacing-xl)', fontSize: '1.2rem' }}>
                                 Sign In
                             </Link>
+                            <a href="https://cychess-docs.vercel.app/docs/overview" className="btn-outline" style={{ padding: 'var(--spacing-md) var(--spacing-xl)', fontSize: '1.2rem', marginLeft: 'var(--spacing-md)' }} target="_blank" rel="noopener noreferrer">
+                                <i className="fa-solid fa-book" style={{ marginRight: '8px' }}></i> Docs
+                            </a>
                         </>
                     )}
                 </div>
@@ -146,6 +154,9 @@ const Landing = () => {
                 </p>
                 <p style={{ margin: 'var(--spacing-xs) 0 0 0' }}>
                     Created by <a href="https://github.com/omar-abdelrady63" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', fontWeight: '500' }}>Omar Abd-Elrady</a>
+                </p>
+                <p style={{ margin: 'var(--spacing-xs) 0 0 0' }}>
+                    <a href="https://cychess-docs.vercel.app/docs/overview" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem' }} target="_blank" rel="noopener noreferrer">Documentation</a>
                 </p>
             </div>
         </div>

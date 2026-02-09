@@ -1,135 +1,151 @@
-
-[data-theme="olive"] {
-    --bg-primary: #283618;
-    --bg-secondary: #606c38;
-    --bg-tertiary: #bc6c25;
-    --text-primary: #fefae0;
-    --text-secondary: #dda15e;
-    --accent: #bc6c25;
+/* 1. Ocean Deep */
+[data-theme="ForestWhisper"] {
+    --bg-primary: #dad7cd;
+    --bg-secondary: #a3b18a;
+    --bg-tertiary: #588157;
+    --text-primary: #344e41;
+    --text-secondary: #3a5a40;
+    --accent: #588157;
 }
 
-[data-theme="fiery"] {
-    --bg-primary: #780000;
-    --bg-secondary: #c1121f;
-    --bg-tertiary: #003049;
-    --text-primary: #fdf0d5;
-    --text-secondary: #669bbc;
-    --accent: #669bbc;
+/* 2. Royal Purple */
+[data-theme="BlueHorizon"] {
+    --bg-primary: #03045e;
+    --bg-secondary: #023e8a;
+    --bg-tertiary: #0077b6;
+    --text-primary: #caf0f8;
+    --text-secondary: #ade8f4;
+    --accent: #00b4d8;
 }
 
-[data-theme="lavender"] {
-    --bg-primary: #22223b;
-    --bg-secondary: #4a4e69;
-    --bg-tertiary: #9a8c98;
-    --text-primary: #f2e9e4;
-    --text-secondary: #c9ada7;
-    --accent: #c9ada7;
+/* 3. Coffee Roast */
+[data-theme="DeepAtlantic"] {
+    --bg-primary: #134074;
+    --bg-secondary: #13315c;
+    --bg-tertiary: #0b2545;
+    --text-primary: #eef4ed;
+    --text-secondary: #8da9c4;
+    --accent: #8da9c4;
 }
 
-[data-theme="golden"] {
-    --bg-primary: #000814;
-    --bg-secondary: #001d3d;
-    --bg-tertiary: #003566;
-    --text-primary: #ffd60a;
-    --text-secondary: #ffc300;
-    --accent: #ffc300;
+/* 4. Deep Navy */
+[data-theme="MysticPurple"] {
+    --bg-primary: #10002b;
+    --bg-secondary: #240046;
+    --bg-tertiary: #3c096c;
+    --text-primary: #e0aaff;
+    --text-secondary: #c77dff;
+    --accent: #7b2cbf;
 }
 
-[data-theme="neutral"] {
-    --bg-primary: #0a0908;
-    --bg-secondary: #22333b;
-    --bg-tertiary: #5e503f;
-    --text-primary: #eae0d5;
-    --text-secondary: #c6ac8f;
-    --accent: #c6ac8f;
+/* 5. Crimson Dark */
+[data-theme="RosyChill"] {
+    --bg-primary: #880d1e;
+    --bg-secondary: #dd2d4a;
+    --bg-tertiary: #f26a8d;
+    --text-primary: #cbeef3;
+    --text-secondary: #f49cbb;
+    --accent: #f26a8d;
 }
 
-[data-theme="autumn"] {
-    --bg-primary: #432818;
-    --bg-secondary: #6f1d1b;
-    --bg-tertiary: #99582a;
-    --text-primary: #ffe6a7;
-    --text-secondary: #bb9457;
-    --accent: #bb9457;
+/* 6. Grayscale */
+[data-theme="GoldenNight"] {
+    --bg-primary: #000000;
+    --bg-secondary: #14213d;
+    --bg-tertiary: #14213d;
+    --text-primary: #ffffff;
+    --text-secondary: #e5e5e5;
+    --accent: #fca311;
 }
 
-[data-theme="sunset"] {
-    --bg-primary: #001427;
-    --bg-secondary: #708d81;
-    --bg-tertiary: #8d0801;
-    --text-primary: #f4d58d;
-    --text-secondary: #f4d58d;
-    --accent: #bf0603;
+/* 7. Earthy Dark */
+[data-theme="Sandalwood"] {
+    --bg-primary: #ede0d4;
+    --bg-secondary: #e6ccb2;
+    --bg-tertiary: #ddb892;
+    --text-primary: #9c6644;
+    --text-secondary: #7f5539;
+    --accent: #b08968;
 }
 
-[data-theme="midnight"] {
-    --bg-primary: #00296b;
-    --bg-secondary: #003f88;
-    --bg-tertiary: #00509d;
-    --text-primary: #ffd500;
-    --text-secondary: #fdc500;
-    --accent: #fdc500;
+/* 8. Muted Cool */
+[data-theme="AshToOnyx"] {
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #e9ecef;
+    --bg-tertiary: #dee2e6;
+    --text-primary: #212529;
+    --text-secondary: #343a40;
+    --accent: #adb5bd;
 }
 
-[data-theme="sea"] {
-    --bg-primary: #0d1321;
-    --bg-secondary: #1d2d44;
-    --bg-tertiary: #3e5c76;
-    --text-primary: #f0ebd8;
-    --text-secondary: #748cab;
-    --accent: #748cab;
+/* 9. Dark Fantasy */
+[data-theme="darkFantasy"] {
+    --bg-primary: #0d0e14;
+    --bg-secondary: #252933;
+    --bg-tertiary: #404556;
+    --text-primary: #777076;
+    --text-secondary: #60515c;
+    --accent: #597d7c;
 }
 
-[data-theme="steel"] {
-    --bg-primary: #212529;
-    --bg-secondary: #343a40;
-    --bg-tertiary: #495057;
-    --text-primary: #f8f9fa;
-    --text-secondary: #adb5bd;
-    --accent: #6c757d;
+
+
+/* 10. Light Steel -> lightSteel */
+[data-theme="PassionFruit"] {
+    --bg-primary: #590d22;
+    --bg-secondary: #800f2f;
+    --bg-tertiary: #a4133c;
+    --text-primary: #fff0f3;
+    --text-secondary: #ffccd5;
+    --accent: #ff4d6d;
 }
 
-[data-theme="berry"] {
-    --bg-primary: #450920;
-    --bg-secondary: #a53860;
-    --bg-tertiary: #da627d;
-    --text-primary: #f9dbbd;
-    --text-secondary: #ffa5ab;
-    --accent: #ffa5ab;
+/* 11. Indigo Night */
+[data-theme="ElectricLime"] {
+    --bg-primary: #007f5f;
+    --bg-secondary: #2b9348;
+    --bg-tertiary: #55a630;
+    --text-primary: #ffff3f;
+    --text-secondary: #eeef20;
+    --accent: #d4d700;
 }
 
-[data-theme="rustic"] {
-    --bg-primary: #585123;
-    --bg-secondary: #772f1a;
-    --bg-tertiary: #f58549;
-    --text-primary: #eec170;
-    --text-secondary: #f2a65a;
-    --accent: #f58549;
+/* 12. Violet Storm */
+[data-theme="cryingObsidian"] {
+    --bg-primary: #020109;
+    --bg-secondary: #03052E;
+    --bg-tertiary: #140152;
+    --text-primary: #0D00A5;
+    --text-secondary: #22007B;
+    --accent: #140152;
 }
 
-[data-theme="fieryRed"] {
-    --bg-primary: #03071e;
-    --bg-secondary: #370617;
-    --bg-tertiary: #6a040f;
-    --text-primary: #ffba08;
-    --text-secondary: #faa307;
-    --accent: #f48c06;
+/* 13. Wine Berry */
+[data-theme="shadowTimber"] {
+    --bg-primary: #0d060f;
+    --bg-secondary: #1e2824;
+    --bg-tertiary: #230000;
+    --text-primary: #766b65;
+    --text-secondary: #5d3c18;
+    --accent: #5d3c18;
 }
 
-[data-theme="oceanBlue"] {
-    --bg-primary: #006466;
-    --bg-secondary: #0b525b;
-    --bg-tertiary: #1b3a4b;
-    --text-primary: #4d194d;
-    --text-secondary: #3e1f47;
-    --accent: #312244;
+/* 14. Carbon Red */
+[data-theme="volcanicAsh"] {
+    --bg-primary: #181818;
+    --bg-secondary: #282828;
+    --bg-tertiary: #381820;
+    --text-primary: #66707a;
+    --text-secondary: #505860;
+    --accent: #502028;
 }
 
-[data-theme="beach"] {
-    --bg-primary: #264653;
-    --bg-secondary: #2a9d8f;
-    --bg-tertiary: #f4a261;
-    --text-primary: #e9c46a;
-    --text-secondary: #e9c46a;
-    --accent: #e76f51;
+/* 15. Neon Violet */
+[data-theme="desertOasis"] {
+    --bg-primary: #2176ae;
+    --bg-secondary: #57b8ff;
+    --bg-tertiary: #b66d0d;
+    --text-primary: #fe6847;
+    --text-secondary: #fbb13c;
+    --accent: #b66d0d;
 }

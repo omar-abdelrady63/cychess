@@ -31,7 +31,7 @@ const ActiveGames = () => {
 
     useEffect(() => {
         if (socket) {
-            socket.on('queue_joined', () => {});
+            socket.on('queue_joined', () => { });
             socket.on('match_found', (data) => {
                 setIsSearching(false);
                 navigate(`/game/${data.room_id}`);
@@ -95,13 +95,21 @@ const ActiveGames = () => {
         setSearchDuration(0);
     };
 
-    const cardBase = 'rounded-2xl border border-white/10 bg-secondary/80 backdrop-blur-xl shadow-xl p-6 sm:p-8';
+    const cardBase = 'rounded-3xl border border-white/10 bg-secondary/90 backdrop-blur-2xl shadow-2xl p-8 sm:p-12 transition-all duration-300 hover:border-white/20 hover:shadow-accent/5';
     const selectClass =
-        'w-full rounded-xl bg-black/40 border border-white/10 py-3 px-4 pr-10 text-text-primary font-medium focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors cursor-pointer text-left appearance-none';
+        'w-full rounded-xl bg-black/40 border border-white/10 py-4 px-5 pr-10 text-text-primary font-medium focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors cursor-pointer text-left appearance-none text-lg';
 
     return (
-        <div className="space-y-8 pb-8">
-            {}
+        <div className="max-w-[1600px] mx-auto pb-12">
+            <div className="text-center mb-12">
+                <h1 className="text-4xl sm:text-5xl font-black text-text-primary mb-4 tracking-tight">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent/60">Play Chess</span>
+                </h1>
+                <p className="text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed opacity-80">
+                    Challenge opponents worldwide or create a casual game for friends.
+                </p>
+            </div>
+
             {isSearching && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
                     <div className={`${cardBase} max-w-lg w-full text-center relative overflow-hidden`}>
@@ -142,110 +150,128 @@ const ActiveGames = () => {
                 </div>
             )}
 
-            {}
-            <div className={`${cardBase} relative overflow-hidden min-h-0`}>
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-transparent opacity-60 pointer-events-none" />
-                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-14">
-                    <div className="flex-1 w-full min-w-0 space-y-6">
-                        <div>
-                            <span className="inline-block px-3 py-1.5 rounded-full bg-accent/20 border border-accent/30 text-accent text-xs font-semibold mb-3">
-                                Ranked matchmaking
-                            </span>
-                            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary leading-tight">
-                                Find a <span className="text-accent">worthy opponent</span>
-                            </h1>
-                            <p className="text-text-secondary opacity-80 mt-2 max-w-lg">
-                                Enter the arena and test your skills against players worldwide.
-                            </p>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+                {/* Ranked Panel */}
+                <div className="bg-secondary/80 backdrop-blur-xl rounded-3xl border border-white/10 p-8 shadow-2xl flex flex-col h-full relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent to-transparent opacity-50" />
+                    <div className="absolute -right-10 -top-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
+                        <i className="fa-solid fa-trophy text-9xl text-accent rotate-12" />
+                    </div>
+
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center border border-accent/20 text-accent">
+                                <i className="fa-solid fa-trophy text-xl" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-text-primary">Ranked Match</h2>
+                                <p className="text-text-secondary text-sm">Find a worthy opponent</p>
+                            </div>
                         </div>
 
-                        <div className="flex flex-wrap items-end gap-4 pt-2">
-                            <div className="w-full sm:max-w-[200px]">
-                                <label className="block text-sm font-medium text-text-secondary opacity-80 mb-2">Time control</label>
-                                <div className="relative">
-                                    <select
-                                        value={matchmakingTimeControl}
-                                        onChange={(e) => setMatchmakingTimeControl(Number(e.target.value))}
-                                        className={selectClass}
-                                        aria-label="Time control"
+                        <div className="bg-black/20 rounded-2xl p-6 border border-white/5 mb-8">
+                            <label className="block text-sm font-bold text-text-secondary uppercase tracking-wider mb-4 pl-1">
+                                Time Control
+                            </label>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                {TIME_OPTIONS.map((opt) => (
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        onClick={() => setMatchmakingTimeControl(opt.value)}
+                                        className={`p-3 rounded-xl border transition-all text-center group/btn ${matchmakingTimeControl === opt.value
+                                            ? 'bg-accent/20 border-accent/50 text-white shadow-[0_0_15px_rgba(var(--accent-rgb),0.2)]'
+                                            : 'bg-white/5 border-white/10 text-text-secondary hover:border-white/20 hover:bg-white/10'
+                                            }`}
                                     >
-                                        {TIME_OPTIONS.map((opt) => (
-                                            <option key={opt.value} value={opt.value}>
-                                                {opt.label} · {opt.sub}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <i className="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none text-sm" aria-hidden="true" />
-                                </div>
+                                        <div className="text-lg font-bold mb-0.5">{opt.label}</div>
+                                        <div className={`text-xs font-medium ${matchmakingTimeControl === opt.value ? 'text-accent' : 'text-text-secondary/60'}`}>
+                                            {opt.sub}
+                                        </div>
+                                    </button>
+                                ))}
                             </div>
-                            <button
-                                type="button"
-                                onClick={handleFindGame}
-                                disabled={isSearching}
-                                className="btn-primary min-w-[180px] h-[48px] flex items-center justify-center gap-2"
-                            >
-                                {isSearching ? (
-                                    <>
-                                        <i className="fa-solid fa-circle-notch fa-spin" />
-                                        Searching…
-                                    </>
-                                ) : (
-                                    <>
-                                        <i className="fa-solid fa-play" />
-                                        Play ranked
-                                    </>
-                                )}
-                            </button>
                         </div>
+
+                        <button
+                            type="button"
+                            onClick={handleFindGame}
+                            disabled={isSearching}
+                            className="w-full py-4 rounded-xl bg-accent hover:bg-accent-hover text-white font-bold text-lg shadow-lg shadow-accent/20 hover:shadow-accent/40 hover:scale-[1.01] transition-all flex items-center justify-center gap-3 mt-auto"
+                        >
+                            {isSearching ? (
+                                <>
+                                    <i className="fa-solid fa-circle-notch fa-spin" />
+                                    Searching...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fa-solid fa-play" />
+                                    Find Match
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            {}
-            <div className={`${cardBase} relative overflow-hidden min-h-0`}>
-                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-14">
-                    <div className="flex-1 w-full min-w-0">
-                        <span className="inline-block px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-400 text-xs font-semibold mb-3">
-                            Casual play
-                        </span>
-                        <h2 className="text-xl sm:text-2xl font-bold text-text-primary mb-2">Friendly match</h2>
-                        <p className="text-text-secondary opacity-80 mb-6 max-w-md">
-                            Create a game room and share the link. No rating changes.
-                        </p>
+                {/* Casual Panel */}
+                <div className="bg-secondary/60 backdrop-blur-xl rounded-3xl border border-white/10 p-8 shadow-xl flex flex-col h-full relative overflow-hidden group hover:bg-secondary/80 transition-colors">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-transparent opacity-50" />
+                    <div className="absolute -right-10 -top-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
+                        <i className="fa-solid fa-handshake text-9xl text-blue-500 rotate-12" />
+                    </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 max-w-md">
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-400">
+                                <i className="fa-solid fa-handshake text-xl" />
+                            </div>
                             <div>
-                                <label className="block text-sm font-medium text-text-secondary opacity-80 mb-2">Time</label>
+                                <h2 className="text-2xl font-bold text-text-primary">Casual Game</h2>
+                                <p className="text-text-secondary text-sm">Play with a friend</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6 mb-8">
+                            <div className="bg-black/20 rounded-2xl p-6 border border-white/5">
+                                <label className="block text-sm font-bold text-text-secondary uppercase tracking-wider mb-4 pl-1">
+                                    Time Control
+                                </label>
                                 <div className="relative">
                                     <select
                                         value={timeControl}
                                         onChange={(e) => setTimeControl(Number(e.target.value))}
                                         className={selectClass}
-                                        aria-label="Game time"
                                     >
                                         {[1, 3, 5, 10, 30, 60].map((t) => (
                                             <option key={t} value={t}>{t} min</option>
                                         ))}
                                     </select>
-                                    <i className="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none text-sm" aria-hidden="true" />
+                                    <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
                                 </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-text-secondary opacity-80 mb-2">Color</label>
-                                <div className="flex rounded-xl bg-black/40 p-1 border border-white/10 gap-0.5">
+
+                            <div className="bg-black/20 rounded-2xl p-6 border border-white/5">
+                                <label className="block text-sm font-bold text-text-secondary uppercase tracking-wider mb-4 pl-1">
+                                    Your Color
+                                </label>
+                                <div className="grid grid-cols-3 gap-3">
                                     {[
-                                        { id: 'white', icon: 'fa-chess-pawn', iconClass: 'text-white/90' },
-                                        { id: 'random', icon: 'fa-shuffle', iconClass: 'text-text-secondary' },
-                                        { id: 'black', icon: 'fa-chess-pawn', iconClass: 'text-gray-800' },
-                                    ].map(({ id, icon, iconClass }) => (
+                                        { id: 'white', label: 'White', icon: 'fa-chess-pawn', color: 'text-white' },
+                                        { id: 'random', label: 'Random', icon: 'fa-shuffle', color: 'text-text-secondary' },
+                                        { id: 'black', label: 'Black', icon: 'fa-chess-pawn', color: 'text-gray-900' },
+                                    ].map((opt) => (
                                         <button
-                                            key={id}
+                                            key={opt.id}
                                             type="button"
-                                            onClick={() => setPreferredColor(id)}
-                                            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1.5 ${preferredColor === id ? 'bg-white/15 text-text-primary border border-white/20 shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/5'}`}
+                                            onClick={() => setPreferredColor(opt.id)}
+                                            className={`py-3 px-2 rounded-xl border transition-all flex flex-col items-center gap-2 ${preferredColor === opt.id
+                                                ? 'bg-white/10 border-white/20 text-white shadow-sm'
+                                                : 'bg-transparent border-transparent text-text-secondary hover:text-text-primary hover:bg-white/5'
+                                                }`}
                                         >
-                                            <i className={`fa-solid ${icon} ${iconClass}`} />
-                                            <span className="capitalize">{id}</span>
+                                            <i className={`fa-solid ${opt.icon} ${opt.color} text-lg`} />
+                                            <span className="text-xs font-bold">{opt.label}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -256,10 +282,19 @@ const ActiveGames = () => {
                             type="button"
                             onClick={handleCreateGame}
                             disabled={loading}
-                            className="btn-secondary w-full sm:max-w-sm flex items-center justify-center gap-2"
+                            className="w-full py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-bold text-lg transition-all flex items-center justify-center gap-3 mt-auto"
                         >
-                            <i className="fa-solid fa-link" />
-                            Create invite link
+                            {loading ? (
+                                <>
+                                    <i className="fa-solid fa-circle-notch fa-spin" />
+                                    Creating...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fa-solid fa-link" />
+                                    Create Invite Link
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>

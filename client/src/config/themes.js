@@ -1,84 +1,101 @@
 
 export const THEMES = {
-    olive: {
-        name: 'Olive Garden',
-        colors: ['#606c38', '#283618', '#fefae0', '#dda15e', '#bc6c25']
+    ForestWhisper: {
+        name: 'Forest Whisper',
+        colors: ["#dad7cd", "#a3b18a", "#588157", "#3a5a40", "#344e41"]
     },
-    fiery: {
-        name: 'Fiery Depths',
-        colors: ['#780000', '#c1121f', '#fdf0d5', '#003049', '#669bbc']
+    BlueHorizon: {
+        name: 'Blue Horizon',
+        colors: ["#03045e", "#023e8a", "#0077b6", "#0096c7", "#00b4d8", "#48cae4", "#90e0ef", "#ade8f4", "#caf0f8"]
     },
-    lavender: {
-        name: 'Lavender Dreams',
-        colors: ['#22223b', '#4a4e69', '#9a8c98', '#c9ada7', '#f2e9e4']
+    DeepAtlantic: {
+        name: 'Deep Atlantic',
+        colors: ["#134074", "#13315c", "#0b2545", "#8da9c4", "#eef4ed"]
     },
-    golden: {
-        name: 'Golden Hour',
-        colors: ['#000814', '#001d3d', '#003566', '#ffc300', '#ffd60a']
+    MysticPurple: {
+        name: 'Mystic Purple',
+        colors: ["#10002b", "#240046", "#3c096c", "#5a189a", "#7b2cbf", "#9d4edd", "#c77dff", "#e0aaff"]
     },
-    neutral: {
-        name: 'Neutral Elegance',
-        colors: ['#0a0908', '#22333b', '#eae0d5', '#c6ac8f', '#5e503f']
+    RosyChill: {
+        name: 'Rosy Chill',
+        colors: ["#880d1e", "#dd2d4a", "#f26a8d", "#f49cbb", "#cbeef3"]
     },
-    autumn: {
-        name: 'Autumn Harvest',
-        colors: ['#6f1d1b', '#bb9457', '#432818', '#99582a', '#ffe6a7']
+    GoldenNight: {
+        name: 'Golden Night',
+        colors: ["#000000", "#14213d", "#fca311", "#e5e5e5", "#ffffff"]
     },
-    sunset: {
-        name: 'Sunset Boulevard',
-        colors: ['#001427', '#708d81', '#f4d58d', '#bf0603', '#8d0801']
+    Sandalwood: {
+        name: 'Sandalwood',
+        colors: ["#ede0d4", "#e6ccb2", "#ddb892", "#b08968", "#7f5539", "#9c6644"]
     },
-    midnight: {
-        name: 'Midnight Blue',
-        colors: ['#00296b', '#003f88', '#00509d', '#fdc500', '#ffd500']
+    AshToOnyx: {
+        name: 'Ash to Onyx',
+        colors: ["#f8f9fa", "#e9ecef", "#dee2e6", "#ced4da", "#adb5bd", "#6c757d", "#495057", "#343a40", "#212529"]
     },
-    sea: {
-        name: 'Deep Sea',
-        colors: ['#0d1321', '#1d2d44', '#3e5c76', '#748cab', '#f0ebd8']
+    darkFantasy: {
+        name: 'Dark Fantasy',
+        colors: ["#0d0e14", "#252933", "#404556", "#60515c", "#777076", "#597d7c", "#386775", "#20504e", "#193d31", "#17292b"]
     },
-    steel: {
-        name: 'Steel Gray',
-        colors: ['#f8f9fa', '#e9ecef', '#dee2e6', '#ced4da', '#adb5bd', '#6c757d', '#495057', '#343a40', '#212529']
+    PassionFruit: {
+        name: 'Passion Fruit',
+        colors: ["#590d22", "#800f2f", "#a4133c", "#c9184a", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ffccd5", "#fff0f3"]
     },
-    berry: {
-        name: 'Berry Bliss',
-        colors: ['#f9dbbd', '#ffa5ab', '#da627d', '#a53860', '#450920']
+    ElectricLime: {
+        name: 'Electric Lime',
+        colors: ["#007f5f", "#2b9348", "#55a630", "#80b918", "#aacc00", "#bfd200", "#d4d700", "#dddf00", "#eeef20", "#ffff3f"]
     },
-    rustic: {
-        name: 'Rustic Charm',
-        colors: ['#585123', '#eec170', '#f2a65a', '#f58549', '#772f1a']
+    cryingObsidian: {
+        name: 'Crying Obsidian',
+        colors: ["#020109", "#03052E", "#140152", "#22007B", "#0D00A5"]
     },
-    fieryRed: {
-        name: 'Fiery Red',
-        colors: ['#03071e', '#370617', '#6a040f', '#9d0208', '#d00000', '#dc2f02', '#e85d04', '#f48c06', '#faa307', '#ffba08']
+    shadowTimber: {
+        name: 'Shadow Timber',
+        colors: ["#0d060f", "#1e2824", "#5d3c18", "#766b65", "#230000"]
     },
-    oceanBlue: {
-        name: 'Ocean Blue',
-        colors: ['#006466', '#065a60', '#0b525b', '#144552', '#1b3a4b', '#212f45', '#272640', '#312244', '#3e1f47', '#4d194d']
+    volcanicAsh: {
+        name: 'Volcanic Ash',
+        colors: ["#181818", "#282828", "#404048", "#505860", "#66707a", "#381820", "#501820", "#502028"]
     },
-    beach: {
-        name: 'Beach Vibes',
-        colors: ['#264653', '#2a9d8f', '#e9c46a', '#f4a261', '#e76f51']
+    desertOasis: {
+        name: 'Desert Oasis',
+        colors: ["#2176ae", "#57b8ff", "#b66d0d", "#fbb13c", "#fe6847"]
     }
 };
 
+
 export const LEGACY_THEME_MAPPING = {
-    'deep-navy': 'midnight',
-    'black-gold': 'golden',
-    'grey-beige': 'neutral',
-    'purple-silver': 'lavender',
-    'crimson-shadow': 'fiery',
-    'emerald-city': 'sea',
-    'royal-blue': 'midnight',
-    'sunset-horizon': 'sunset',
-    'neon-nights': 'fieryRed',
-    'ocean-breeze': 'oceanBlue',
-    'amber-glow': 'autumn',
-    'lavender-dreams': 'lavender',
-    'midnight-forest': 'olive',
-    'cherry-blossom': 'berry',
-    'arctic-frost': 'sea'
+    'deep-navy': 'DeepAtlantic',
+    'black-gold': 'GoldenNight',
+    'grey-beige': 'AshToOnyx',
+    'purple-silver': 'MysticPurple',
+    'crimson-shadow': 'volcanicAsh',
+    'emerald-city': 'ForestWhisper',
+    'royal-blue': 'DeepAtlantic',
+    'sunset-horizon': 'desertOasis',
+    'neon-nights': 'cryingObsidian',
+    'ocean-breeze': 'BlueHorizon',
+    'amber-glow': 'Sandalwood',
+    'lavender-dreams': 'MysticPurple',
+    'midnight-forest': 'shadowTimber',
+    'cherry-blossom': 'RosyChill',
+    'arctic-frost': 'BlueHorizon',
+    'olive': 'ForestWhisper',
+    'fiery': 'PassionFruit',
+    'lavender': 'MysticPurple',
+    'golden': 'GoldenNight',
+    'neutral': 'AshToOnyx',
+    'autumn': 'Sandalwood',
+    'sunset': 'darkFantasy',
+    'midnight': 'DeepAtlantic',
+    'sea': 'BlueHorizon',
+    'steel': 'AshToOnyx',
+    'berry': 'PassionFruit',
+    'rustic': 'Sandalwood',
+    'fieryRed': 'PassionFruit',
+    'oceanBlue': 'BlueHorizon',
+    'beach': 'BlueHorizon'
 };
+
 
 export const getThemeKeys = () => Object.keys(THEMES);
 

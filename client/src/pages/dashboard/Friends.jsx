@@ -161,7 +161,7 @@ const Friends = () => {
 
     return (
         <div className="space-y-6 sm:space-y-8 pb-8">
-            {}
+            { }
             <div ref={searchRef} className="w-full">
                 <div className="relative w-full max-w-2xl">
                     <input
@@ -208,7 +208,7 @@ const Friends = () => {
                 </div>
             </div>
 
-            {}
+            { }
             {pendingRequests.length > 0 && (
                 <div className={cardBase}>
                     <h3 className="text-sm font-semibold text-accent mb-4 flex items-center gap-2">
@@ -234,62 +234,72 @@ const Friends = () => {
                 </div>
             )}
 
-            {}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            { }
+            {/* Friends Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8">
+                {/* Add Friend Button */}
                 <button
                     type="button"
                     onClick={() => searchRef.current?.querySelector('input')?.focus()}
-                    className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/20 hover:border-accent/50 bg-white/5 hover:bg-white/10 p-6 sm:p-8 min-h-[200px] sm:min-h-[260px] transition-all group"
+                    className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/20 hover:border-accent/50 bg-white/5 hover:bg-white/10 p-6 sm:p-8 aspect-[3/4] transition-all group relative overflow-hidden"
                 >
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-accent/20 flex items-center justify-center text-accent mb-3 sm:mb-4 group-hover:scale-105 transition-transform border border-accent/30">
-                        <i className="fa-solid fa-plus text-lg sm:text-xl" />
+                    <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="w-20 h-20 rounded-2xl bg-accent/20 flex items-center justify-center text-accent mb-6 group-hover:scale-110 transition-transform duration-300 border border-accent/30 shadow-[0_0_30px_rgba(var(--accent-rgb),0.2)]">
+                        <i className="fa-solid fa-plus text-3xl" />
                     </div>
-                    <span className="font-semibold text-text-secondary group-hover:text-text-primary transition-colors text-sm">Add friend</span>
+                    <span className="font-bold text-text-secondary group-hover:text-text-primary transition-colors text-lg">Add New Friend</span>
                 </button>
 
                 {friends.map((friend) => (
                     <div
                         key={friend.id}
-                        className={`${cardBase} hover:border-white/20 transition-all cursor-pointer group/card flex flex-col relative overflow-hidden`}
+                        className="relative group/card rounded-3xl overflow-hidden aspect-[3/4] cursor-pointer border border-white/10 hover:border-accent/50 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-accent/10"
                         onClick={() => navigate(`/profile/${friend.username}`)}
                     >
-                        <div className={`absolute top-0 left-0 right-0 h-1 ${friend.status === 'in_game' ? 'bg-gradient-to-r from-orange-500 to-red-500' : friend.is_online ? 'bg-gradient-to-r from-green-500 to-emerald-400' : 'bg-white/10'}`} />
+                        {/* Background Image */}
+                        <div
+                            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover/card:scale-110"
+                            style={{
+                                backgroundImage: `url(${friend.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${friend.username}&backgroundColor=1a1a1a`})`
+                            }}
+                        />
 
-                        <div className="flex items-start justify-between gap-2 mb-4 pt-1">
-                            <div className="flex items-center gap-3 min-w-0">
-                                <div className="relative shrink-0">
-                                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-white/10 flex items-center justify-center text-lg sm:text-xl font-bold text-text-primary overflow-hidden border border-white/10">
-                                        {friend.avatar ? (
-                                            <img src={friend.avatar} alt="" className="w-full h-full object-cover" />
-                                        ) : (
-                                            friend.username[0].toUpperCase()
-                                        )}
-                                    </div>
-                                    <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-secondary ${friend.is_online ? 'bg-green-500' : 'bg-gray-500'}`} />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <h3 className="text-base sm:text-lg font-semibold text-text-primary truncate">{friend.full_name || friend.username}</h3>
-                                    <p className="text-xs text-text-secondary opacity-80 mt-0.5">
-                                        {friend.status === 'in_game' ? <span className="text-orange-400">In match</span> : friend.is_online ? <span className="text-green-400">Online</span> : 'Offline'}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex gap-1 shrink-0" onClick={e => e.stopPropagation()}>
-                                <button type="button" onClick={(e) => handleBlockFriend(friend.id, e)} className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg hover:bg-red-500/20 flex items-center justify-center text-text-secondary hover:text-red-400 transition-colors" title="Block"><i className="fa-solid fa-ban text-sm" /></button>
-                                <button type="button" onClick={(e) => handleDeleteFriend(friend.id, e)} className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg hover:bg-white/10 flex items-center justify-center text-text-secondary hover:text-red-400 transition-colors" title="Remove friend"><i className="fa-solid fa-trash-can text-sm" /></button>
-                            </div>
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover/card:opacity-90 transition-opacity duration-300" />
+
+                        {/* Status Line */}
+                        <div className={`absolute top-0 left-0 right-0 h-1.5 ${friend.status === 'in_game' ? 'bg-gradient-to-r from-orange-500 to-red-500' : friend.is_online ? 'bg-gradient-to-r from-green-500 to-emerald-400' : 'bg-white/20'}`} />
+
+                        {/* Top Actions (Hover only) */}
+                        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover/card:opacity-100 transition-all duration-300 translate-y-[-10px] group-hover/card:translate-y-0">
+                            <button type="button" onClick={(e) => handleBlockFriend(friend.id, e)} className="w-10 h-10 rounded-xl bg-black/60 hover:bg-red-500 hover:text-white backdrop-blur-md flex items-center justify-center text-white/70 transition-colors border border-white/10" title="Block"><i className="fa-solid fa-ban" /></button>
+                            <button type="button" onClick={(e) => handleDeleteFriend(friend.id, e)} className="w-10 h-10 rounded-xl bg-black/60 hover:bg-red-500 hover:text-white backdrop-blur-md flex items-center justify-center text-white/70 transition-colors border border-white/10" title="Remove"><i className="fa-solid fa-trash-can" /></button>
                         </div>
 
-                        <div className="mt-auto pt-2 space-y-2">
-                            {friend.status === 'in_game' ? (
-                                <button type="button" onClick={(e) => handleSpectate(friend.id, e)} className="btn-primary w-full text-sm py-2.5 flex items-center justify-center gap-2">
-                                    <i className="fa-solid fa-eye" /> Spectate
-                                </button>
-                            ) : (
-                                <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/profile/${friend.username}`); }} className="btn-secondary w-full text-sm py-2.5 flex items-center justify-center gap-2">
-                                    View profile
-                                </button>
-                            )}
+                        {/* Content */}
+                        <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 flex flex-col justify-end">
+                            <div className="transform transition-transform duration-300 group-hover/card:translate-y-[-10px] translate-y-0">
+                                <h3 className="text-2xl sm:text-3xl font-bold text-white truncate drop-shadow-md mb-1">{friend.full_name || friend.username}</h3>
+                                <p className="text-white/70 font-medium flex items-center gap-2 text-sm">
+                                    <span className={`w-2.5 h-2.5 rounded-full ${friend.is_online ? 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]' : 'bg-gray-500'}`} />
+                                    {friend.status === 'in_game' ? <span className="text-orange-300">Playing Now</span> : friend.is_online ? 'Online' : 'Offline'}
+                                    <span className="text-white/40">•</span>
+                                    <span className="text-white/50">@{friend.username}</span>
+                                </p>
+                            </div>
+
+                            {/* Main Action Logic */}
+                            <div className="grid grid-cols-1 gap-3 mt-4 opacity-0 group-hover/card:opacity-100 transition-all duration-300 transform translate-y-4 group-hover/card:translate-y-0 absolute bottom-6 left-6 right-6 lg:relative lg:bottom-0 lg:left-0 lg:right-0">
+                                {friend.status === 'in_game' ? (
+                                    <button type="button" onClick={(e) => handleSpectate(friend.id, e)} className="btn-primary w-full py-3.5 flex items-center justify-center gap-2 font-bold shadow-lg shadow-accent/20">
+                                        <i className="fa-solid fa-eye" /> Watch Game
+                                    </button>
+                                ) : (
+                                    <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/profile/${friend.username}`); }} className="w-full py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold backdrop-blur-md transition-colors flex items-center justify-center gap-2">
+                                        View Profile
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 ))}
