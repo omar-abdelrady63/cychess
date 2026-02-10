@@ -61,6 +61,8 @@ const MATCHING_INTERVAL = 2000;
 
 async function broadcastStatusToFriends(io, userId, newStatus) {
     try {
+        if (!mongoose.Types.ObjectId.isValid(userId)) return;
+
         const user = await User.findById(userId);
         if (!user) return;
 
@@ -850,9 +852,11 @@ function registerGameSocket(io) {
                     new_ratings: newRatings
                 });
 
-                const abandoningUser = await User.findById(socket.userId);
-                if (abandoningUser) {
-                    broadcastSystemMessage(io, room_id, `${abandoningUser.username} abandoned the game`);
+                if (mongoose.Types.ObjectId.isValid(socket.userId)) {
+                    const abandoningUser = await User.findById(socket.userId);
+                    if (abandoningUser) {
+                        broadcastSystemMessage(io, room_id, `${abandoningUser.username} abandoned the game`);
+                    }
                 }
 
                 if (abandonmentTimers.has(room_id)) {
@@ -901,8 +905,10 @@ function registerGameSocket(io) {
                     }
                 }
 
-                await User.findByIdAndUpdate(socket.userId, { status: 'offline', last_seen: new Date() });
-                await broadcastStatusToFriends(io, socket.userId, 'offline');
+                if (mongoose.Types.ObjectId.isValid(socket.userId)) {
+                    await User.findByIdAndUpdate(socket.userId, { status: 'offline', last_seen: new Date() });
+                    await broadcastStatusToFriends(io, socket.userId, 'offline');
+                }
 
                 if (socket.currentRoom && !socket.isSpectator) {
                     try {
