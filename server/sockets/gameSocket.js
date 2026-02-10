@@ -3,6 +3,7 @@ const Game = require('../models/Game');
 const User = require('../models/User');
 const { calculateEloRating } = require('../utils/elo');
 const { updateTournamentStandings } = require('../utils/tournamentPairing');
+const mongoose = require('mongoose');
 
 async function updateRatings(game) {
     if (!game.result || !game.white_player || !game.black_player) return null;
@@ -53,10 +54,10 @@ const roomSpectators = new Map();
 const matchmakingQueue = new Map();
 let matchmakingInterval = null;
 
-const MAX_RATING_RANGE = 1000; 
-const INITIAL_RANGE = 50; 
-const RANGE_EXPANSION = 50; 
-const MATCHING_INTERVAL = 2000; 
+const MAX_RATING_RANGE = 1000;
+const INITIAL_RANGE = 50;
+const RANGE_EXPANSION = 50;
+const MATCHING_INTERVAL = 2000;
 
 async function broadcastStatusToFriends(io, userId, newStatus) {
     try {
@@ -206,23 +207,31 @@ function registerGameSocket(io) {
         socket.on('authenticate', async (data) => {
             const { userId } = data;
             if (userId) {
+                // If userId is NOT a valid ObjectId (e.g. guest_xyz), do handle it safely.
+                const isValidId = mongoose.Types.ObjectId.isValid(userId);
+
                 socket.userId = userId;
                 socket.join(`user_${userId}`);
-                await User.findByIdAndUpdate(userId, { status: 'online' });
-                await broadcastStatusToFriends(io, userId, 'online');
-                console.log(`✓ User ${userId} authenticated`);
 
-                try {
-                    const activeGame = await Game.findOne({
-                        $or: [{ white_player: userId }, { black_player: userId }],
-                        status: 'active'
-                    });
+                if (isValidId) {
+                    await User.findByIdAndUpdate(userId, { status: 'online' });
+                    await broadcastStatusToFriends(io, userId, 'online');
+                    console.log(`✓ User ${userId} authenticated`);
 
-                    if (activeGame) {
-                        socket.emit('active_game_found', { room_id: activeGame.room_id });
+                    try {
+                        const activeGame = await Game.findOne({
+                            $or: [{ white_player: userId }, { black_player: userId }],
+                            status: 'active'
+                        });
+
+                        if (activeGame) {
+                            socket.emit('active_game_found', { room_id: activeGame.room_id });
+                        }
+                    } catch (err) {
+                        console.error('Error checking for active game:', err);
                     }
-                } catch (err) {
-                    console.error('Error checking for active game:', err);
+                } else {
+                    console.log(`✓ Guest User ${userId} connected`);
                 }
 
                 startMatchmakingInterval(io);
@@ -238,6 +247,11 @@ function registerGameSocket(io) {
             }
 
             try {
+                if (!mongoose.Types.ObjectId.isValid(socket.userId)) {
+                    socket.emit('error', { message: 'Guests cannot join matchmaking' });
+                    return;
+                }
+
                 const user = await User.findById(socket.userId);
                 if (!user) {
                     socket.emit('error', { message: 'User not found' });
@@ -310,8 +324,10 @@ function registerGameSocket(io) {
                     const isPlayer = (whiteId === socket.userId.toString()) || (blackId === socket.userId.toString());
 
                     if (isPlayer) {
-                        await User.findByIdAndUpdate(socket.userId, { status: 'in_game' });
-                        await broadcastStatusToFriends(io, socket.userId, 'in_game');
+                        if (mongoose.Types.ObjectId.isValid(socket.userId)) {
+                            await User.findByIdAndUpdate(socket.userId, { status: 'in_game' });
+                            await broadcastStatusToFriends(io, socket.userId, 'in_game');
+                        }
                     }
                 }
 
@@ -327,9 +343,13 @@ function registerGameSocket(io) {
                 });
 
                 if (game.status === 'active' && game.white_player && game.black_player) {
-                    const joiningUser = await User.findById(socket.userId);
-                    if (joiningUser) {
-                        broadcastSystemMessage(io, room_id, `${joiningUser.username} joined the game`);
+                    if (mongoose.Types.ObjectId.isValid(socket.userId)) {
+                        const joiningUser = await User.findById(socket.userId);
+                        if (joiningUser) {
+                            broadcastSystemMessage(io, room_id, `${joiningUser.username} joined the game`);
+                        }
+                    } else {
+                        broadcastSystemMessage(io, room_id, `Guest joined the game`);
                     }
                 }
 
@@ -375,8 +395,10 @@ function registerGameSocket(io) {
 
                 if (socket.userId) {
                     roomSpectators.get(room_id).add(socket.userId.toString());
-                    await User.findByIdAndUpdate(socket.userId, { status: 'spectating' });
-                    await broadcastStatusToFriends(io, socket.userId, 'spectating');
+                    if (mongoose.Types.ObjectId.isValid(socket.userId)) {
+                        await User.findByIdAndUpdate(socket.userId, { status: 'spectating' });
+                        await broadcastStatusToFriends(io, socket.userId, 'spectating');
+                    }
                 }
 
                 console.log(`✓ User ${socket.userId} spectating room: ${room_id}`);
@@ -417,8 +439,10 @@ function registerGameSocket(io) {
                 socket.currentRoom = null;
 
                 if (socket.userId) {
-                    await User.findByIdAndUpdate(socket.userId, { status: 'online' });
-                    await broadcastStatusToFriends(io, socket.userId, 'online');
+                    if (mongoose.Types.ObjectId.isValid(socket.userId)) {
+                        await User.findByIdAndUpdate(socket.userId, { status: 'online' });
+                        await broadcastStatusToFriends(io, socket.userId, 'online');
+                    }
                 }
 
                 console.log(`✓ User ${socket.userId} left spectating room: ${room_id}`);
@@ -442,6 +466,11 @@ function registerGameSocket(io) {
                 const currentPlayerId = isWhiteTurn ? game.white_player : game.black_player;
 
                 if (!socket.userId || currentPlayerId.toString() !== socket.userId.toString()) {
+                    // Also check if valid ObjectId to prevent guest moves causing downstream issues if they somehow bypass checks
+                    if (!mongoose.Types.ObjectId.isValid(socket.userId)) {
+                        socket.emit('error', { message: 'Guests cannot make moves' });
+                        return;
+                    }
                     socket.emit('error', { message: 'Not your turn or not your game' });
                     return;
                 }
@@ -664,10 +693,12 @@ function registerGameSocket(io) {
                     new_ratings: newRatings
                 });
 
-                const resigningUser = await User.findById(socket.userId);
-                if (resigningUser) {
-                    broadcastSystemMessage(io, room_id, `${resigningUser.username} resigned`);
+                let resigningUsername = 'Player';
+                if (mongoose.Types.ObjectId.isValid(socket.userId)) {
+                    const resigningUser = await User.findById(socket.userId);
+                    if (resigningUser) resigningUsername = resigningUser.username;
                 }
+                broadcastSystemMessage(io, room_id, `${resigningUsername} resigned`);
 
                 if (abandonmentTimers.has(room_id)) {
                     clearTimeout(abandonmentTimers.get(room_id).timeout);
@@ -683,10 +714,12 @@ function registerGameSocket(io) {
         socket.on('offer_draw', async (data) => {
             const { room_id } = data;
             try {
-                const sender = await User.findById(socket.userId);
-                if (sender) {
-                    broadcastSystemMessage(io, room_id, `${sender.username} offered a draw`);
+                let senderName = 'Player';
+                if (mongoose.Types.ObjectId.isValid(socket.userId)) {
+                    const sender = await User.findById(socket.userId);
+                    if (sender) senderName = sender.username;
                 }
+                broadcastSystemMessage(io, room_id, `${senderName} offered a draw`);
                 socket.to(room_id).emit('draw_offered', { sender_id: socket.userId });
             } catch (error) {
                 console.error('Offer draw error:', error);
@@ -768,12 +801,15 @@ function registerGameSocket(io) {
                     return;
                 }
 
-                const sender = await User.findById(socket.userId);
-                if (!sender) return;
+                let senderName = 'Guest';
+                if (mongoose.Types.ObjectId.isValid(socket.userId)) {
+                    const sender = await User.findById(socket.userId);
+                    if (sender) senderName = sender.username;
+                }
 
                 io.to(room_id).emit('chat_message', {
                     senderId: socket.userId.toString(),
-                    senderName: sender.username,
+                    senderName: senderName,
                     text: message,
                     timestamp: new Date().toISOString(),
                     type: 'player'

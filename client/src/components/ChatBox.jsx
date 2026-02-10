@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import LoginRequiredModal from './LoginRequiredModal';
 import '../styles/ChatBox.css';
 
 const ChatBox = ({ messages, onSendMessage, isSpectator, currentUser }) => {
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -11,6 +13,10 @@ const ChatBox = ({ messages, onSendMessage, isSpectator, currentUser }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (currentUser?.isGuest) {
+            setShowLoginModal(true);
+            return;
+        }
         const message = inputRef.current.value.trim();
         if (message && !isSpectator) {
             onSendMessage(message);
@@ -82,7 +88,15 @@ const ChatBox = ({ messages, onSendMessage, isSpectator, currentUser }) => {
                     <i className="fa-solid fa-paper-plane"></i>
                 </button>
             </form>
-        </div>
+
+
+            <LoginRequiredModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+                message="Sign in to chat with other players."
+                actionLabel="Sign In to Chat"
+            />
+        </div >
     );
 };
 

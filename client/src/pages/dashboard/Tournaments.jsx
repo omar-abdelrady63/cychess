@@ -2,16 +2,24 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import TournamentCreate from '../../components/TournamentCreate';
+import LoginRequiredModal from '../../components/LoginRequiredModal';
+import { useAuth } from '../../context/AuthContext';
 
 const Tournaments = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [showTournamentCreate, setShowTournamentCreate] = useState(false);
     const [tournamentInviteCode, setTournamentInviteCode] = useState('');
     const [joiningTournament, setJoiningTournament] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     const handleJoinTournament = async () => {
+        if (user?.isGuest) {
+            setShowLoginModal(true);
+            return;
+        }
         if (!tournamentInviteCode.trim()) {
             alert('Please enter a tournament invite code');
             return;
@@ -38,7 +46,7 @@ const Tournaments = () => {
                 <TournamentCreate onClose={() => setShowTournamentCreate(false)} />
             ) : (
                 <div className="grid grid-cols-1 gap-8">
-                    {}
+                    { }
                     <div className={`${cardBase} relative overflow-hidden min-h-[380px] flex items-center`}>
                         <div className="absolute inset-0 bg-gradient-to-r from-accent/15 to-purple-900/30 pointer-events-none" />
                         <div className="absolute right-0 top-0 bottom-0 w-2/3 bg-[url('https://images.unsplash.com/photo-1529699211952-734e80c4d42b?q=80&w=2071&auto=format&fit=crop')] bg-cover bg-center opacity-25 mix-blend-overlay pointer-events-none" />
@@ -54,7 +62,13 @@ const Tournaments = () => {
                             </p>
                             <button
                                 type="button"
-                                onClick={() => setShowTournamentCreate(true)}
+                                onClick={() => {
+                                    if (user?.isGuest) {
+                                        setShowLoginModal(true);
+                                    } else {
+                                        setShowTournamentCreate(true);
+                                    }
+                                }}
                                 className="btn-primary flex items-center gap-3"
                             >
                                 Create event
@@ -63,7 +77,7 @@ const Tournaments = () => {
                         </div>
                     </div>
 
-                    {}
+                    { }
                     <div className={`${cardBase} p-6 sm:p-10 flex flex-col md:flex-row items-center gap-10 md:gap-14`}>
                         <div className="flex-1 w-full">
                             <h2 className="text-2xl font-bold text-text-primary mb-3 flex items-center gap-3">
@@ -111,6 +125,12 @@ const Tournaments = () => {
                     </div>
                 </div>
             )}
+            <LoginRequiredModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+                message="Join the community to participate in tournaments and compete for the top spot."
+                actionLabel="Sign In to Compete"
+            />
         </div>
     );
 };

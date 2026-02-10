@@ -1,8 +1,14 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Landing = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, loginAsGuest } = useAuth();
+    const navigate = useNavigate();
+
+    const handleExplore = () => {
+        loginAsGuest();
+        navigate('/dashboard');
+    };
 
     return (
         <div className="container">
@@ -39,6 +45,19 @@ const Landing = () => {
                             <Link to="/register" className="btn-primary" style={{ padding: 'var(--spacing-md) var(--spacing-xl)', fontSize: '1.2rem' }}>
                                 Start Playing Free
                             </Link>
+                            <button
+                                onClick={handleExplore}
+                                className="btn-outline"
+                                style={{
+                                    padding: 'var(--spacing-md) var(--spacing-xl)',
+                                    fontSize: '1.2rem',
+                                    backgroundColor: 'transparent',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <i className="fa-solid fa-compass" style={{ marginRight: '8px' }}></i>
+                                Explore
+                            </button>
                             <Link to="/login" className="btn-outline" style={{ padding: 'var(--spacing-md) var(--spacing-xl)', fontSize: '1.2rem' }}>
                                 Sign In
                             </Link>

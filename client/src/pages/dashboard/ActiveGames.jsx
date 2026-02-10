@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import axios from 'axios';
+import LoginRequiredModal from '../../components/LoginRequiredModal';
 
 const TIME_OPTIONS = [
     { value: 1, label: '1 min', sub: 'Bullet' },
@@ -21,6 +22,7 @@ const ActiveGames = () => {
     const [timeControl, setTimeControl] = useState(10);
     const [preferredColor, setPreferredColor] = useState('white');
     const [loading, setLoading] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     const [matchmakingTimeControl, setMatchmakingTimeControl] = useState(10);
     const [isSearching, setIsSearching] = useState(false);
@@ -64,6 +66,10 @@ const ActiveGames = () => {
     }, [isSearching]);
 
     const handleCreateGame = async () => {
+        if (user?.isGuest) {
+            setShowLoginModal(true);
+            return;
+        }
         setLoading(true);
         try {
             const response = await axios.post(`${API_URL}/api/game/create`, {
@@ -80,6 +86,10 @@ const ActiveGames = () => {
     };
 
     const handleFindGame = () => {
+        if (user?.isGuest) {
+            setShowLoginModal(true);
+            return;
+        }
         if (!socket) {
             alert('Not connected to server');
             return;
@@ -109,6 +119,13 @@ const ActiveGames = () => {
                     Challenge opponents worldwide or create a casual game for friends.
                 </p>
             </div>
+
+            <LoginRequiredModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+                message="Create an account to play online, track your progress, and climb the leaderboard."
+                actionLabel="Sign In to Play"
+            />
 
             {isSearching && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">

@@ -8,12 +8,14 @@ const Settings = () => {
     const navigate = useNavigate();
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+
     const [username, setUsername] = useState(user?.username || '');
     const [loading, setLoading] = useState(false);
     const [msg, setMsg] = useState({ type: '', content: '' });
 
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
+        if (user?.isGuest) return;
         setLoading(true);
         setMsg({ type: '', content: '' });
 
@@ -28,6 +30,7 @@ const Settings = () => {
     };
 
     const handleDeleteAccount = async () => {
+        if (user?.isGuest) return;
         if (!confirm('Are you SURE? This action cannot be undone. All your data will be lost forever.')) return;
 
         setLoading(true);
@@ -82,15 +85,27 @@ const Settings = () => {
                             onChange={(e) => setUsername(e.target.value)}
                             minLength={3}
                             maxLength={20}
+                            disabled={user?.isGuest}
                         />
                         <small style={{ color: 'var(--text-secondary)' }}>
                             Changing username will change your discriminator (hash)
                         </small>
                     </div>
 
-                    <button className="btn-primary w-full" type="submit" disabled={loading}>
+                    <button
+                        className="btn-primary w-full"
+                        type="submit"
+                        disabled={loading || user?.isGuest}
+                        style={user?.isGuest ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                    >
                         {loading ? 'Saving...' : 'Save Changes'}
                     </button>
+                    {user?.isGuest && (
+                        <p style={{ color: '#eab308', marginTop: '10px', fontSize: '0.9rem', textAlign: 'center' }}>
+                            <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '5px' }}></i>
+                            Settings cannot be saved in Explore Mode
+                        </p>
+                    )}
                 </form>
 
                 <hr style={{ borderColor: 'var(--bg-tertiary)', margin: 'var(--spacing-lg) 0' }} />
@@ -99,7 +114,7 @@ const Settings = () => {
 
             <hr style={{ borderColor: 'var(--bg-tertiary)', margin: 'var(--spacing-lg) 0' }} />
 
-            <BlockedUsersList API_URL={API_URL} setMsg={setMsg} />
+            <BlockedUsersList API_URL={API_URL} setMsg={setMsg} isGuest={user?.isGuest} />
 
             <div style={{ marginTop: 'var(--spacing-xl)' }}>
                 <h3 style={{ color: '#ef4444' }}>Danger Zone</h3>
@@ -108,9 +123,9 @@ const Settings = () => {
                 </p>
                 <button
                     className="btn-primary"
-                    style={{ backgroundColor: '#ef4444', borderColor: '#ef4444' }}
+                    style={{ backgroundColor: '#ef4444', borderColor: '#ef4444', ...(user?.isGuest ? { opacity: 0.5, cursor: 'not-allowed' } : {}) }}
                     onClick={handleDeleteAccount}
-                    disabled={loading}
+                    disabled={loading || user?.isGuest}
                 >
                     Delete Account
                 </button>
@@ -120,13 +135,17 @@ const Settings = () => {
     );
 };
 
-const BlockedUsersList = ({ API_URL, setMsg }) => {
+const BlockedUsersList = ({ API_URL, setMsg, isGuest }) => {
     const [blocked, setBlocked] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchBlocked();
-    }, []);
+        if (!isGuest) {
+            fetchBlocked();
+        } else {
+            setLoading(false);
+        }
+    }, [isGuest]);
 
     const fetchBlocked = async () => {
         try {
@@ -140,6 +159,7 @@ const BlockedUsersList = ({ API_URL, setMsg }) => {
     };
 
     const handleUnblock = async (id) => {
+        if (isGuest) return;
         try {
             await axios.post(`${API_URL}/api/friends/unblock/${id}`);
             setMsg({ type: 'success', content: 'User unblocked' });
@@ -150,6 +170,12 @@ const BlockedUsersList = ({ API_URL, setMsg }) => {
     };
 
     if (loading) return <div>Loading blocked users...</div>;
+    if (isGuest) return (
+        <div style={{ marginTop: 'var(--spacing-lg)' }}>
+            <h3>Blocked Users</h3>
+            <p style={{ color: 'var(--text-secondary)' }}>Blocked users list is not available in Explore Mode.</p>
+        </div>
+    );
 
     return (
         <div style={{ marginTop: 'var(--spacing-lg)' }}>

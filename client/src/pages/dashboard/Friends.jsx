@@ -89,6 +89,10 @@ const Friends = () => {
     };
 
     const sendFriendRequest = async (receiverId) => {
+        if (user?.isGuest) {
+            alert('Please login to add friends');
+            return;
+        }
         try {
             await axios.post(`${API_URL}/api/friends/send-request`, { receiver_id: receiverId });
             setSearchQuery('');
@@ -101,6 +105,7 @@ const Friends = () => {
     };
 
     const acceptFriendRequest = async (requestId) => {
+        if (user?.isGuest) return;
         try {
             await axios.post(`${API_URL}/api/friends/accept/${requestId}`);
             fetchPendingRequests();
@@ -111,6 +116,7 @@ const Friends = () => {
     };
 
     const rejectFriendRequest = async (requestId) => {
+        if (user?.isGuest) return;
         try {
             await axios.post(`${API_URL}/api/friends/reject/${requestId}`);
             fetchPendingRequests();
@@ -121,6 +127,7 @@ const Friends = () => {
 
     const handleDeleteFriend = async (friendId, e) => {
         e?.stopPropagation();
+        if (user?.isGuest) return;
         if (!window.confirm('Remove this friend?')) return;
         try {
             await axios.delete(`${API_URL}/api/friends/delete/${friendId}`);
@@ -132,6 +139,7 @@ const Friends = () => {
 
     const handleBlockFriend = async (friendId, e) => {
         e?.stopPropagation();
+        if (user?.isGuest) return;
         if (!window.confirm('Block this user? They will be removed from your friends and cannot contact you.')) return;
         try {
             await axios.post(`${API_URL}/api/friends/block/${friendId}`);
@@ -238,17 +246,19 @@ const Friends = () => {
             {/* Friends Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8">
                 {/* Add Friend Button */}
-                <button
-                    type="button"
-                    onClick={() => searchRef.current?.querySelector('input')?.focus()}
-                    className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/20 hover:border-accent/50 bg-white/5 hover:bg-white/10 p-6 sm:p-8 aspect-[3/4] transition-all group relative overflow-hidden"
-                >
-                    <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="w-20 h-20 rounded-2xl bg-accent/20 flex items-center justify-center text-accent mb-6 group-hover:scale-110 transition-transform duration-300 border border-accent/30 shadow-[0_0_30px_rgba(var(--accent-rgb),0.2)]">
-                        <i className="fa-solid fa-plus text-3xl" />
-                    </div>
-                    <span className="font-bold text-text-secondary group-hover:text-text-primary transition-colors text-lg">Add New Friend</span>
-                </button>
+                {!user?.isGuest && (
+                    <button
+                        type="button"
+                        onClick={() => searchRef.current?.querySelector('input')?.focus()}
+                        className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/20 hover:border-accent/50 bg-white/5 hover:bg-white/10 p-6 sm:p-8 aspect-[3/4] transition-all group relative overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="w-20 h-20 rounded-2xl bg-accent/20 flex items-center justify-center text-accent mb-6 group-hover:scale-110 transition-transform duration-300 border border-accent/30 shadow-[0_0_30px_rgba(var(--accent-rgb),0.2)]">
+                            <i className="fa-solid fa-plus text-3xl" />
+                        </div>
+                        <span className="font-bold text-text-secondary group-hover:text-text-primary transition-colors text-lg">Add New Friend</span>
+                    </button>
+                )}
 
                 {friends.map((friend) => (
                     <div

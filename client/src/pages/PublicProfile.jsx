@@ -55,6 +55,11 @@ const PublicProfile = () => {
             return;
         }
 
+        if (currentUser?.isGuest) {
+            alert('Please login to add friends');
+            return;
+        }
+
         try {
             const { friend_status, user } = profile;
 
@@ -107,7 +112,7 @@ const PublicProfile = () => {
             )}
 
             <div className="mt-8">
-                {}
+                { }
                 <div className="flex border-b border-white/10 mb-6">
                     <button
                         onClick={() => setActiveTab('history')}
@@ -129,7 +134,7 @@ const PublicProfile = () => {
                     </button>
                 </div>
 
-                {}
+                { }
                 <div className="bg-secondary/30 rounded-xl border border-white/5 backdrop-blur-sm min-h-[300px]">
                     {activeTab === 'history' ? (
                         <MatchHistory history={history} />

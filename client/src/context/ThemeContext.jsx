@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect, useLayoutEffect } from 'react';
 import { THEMES, getThemeKeys, migrateLegacyTheme } from '../config/themes';
 
 const ThemeContext = createContext();
@@ -16,7 +16,7 @@ export const ThemeProvider = ({ children }) => {
         const savedTheme = localStorage.getItem('theme');
 
         if (!savedTheme) {
-            return 'oceanDeep';
+            return 'shadowTimber';
         }
 
         const themeKeys = getThemeKeys();
@@ -29,7 +29,7 @@ export const ThemeProvider = ({ children }) => {
         return savedTheme;
     });
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
     }, [theme]);

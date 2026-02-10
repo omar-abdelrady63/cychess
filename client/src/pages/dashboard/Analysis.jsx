@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Chess } from 'chess.js';
+import { useAuth } from '../../context/AuthContext';
 
 const Analysis = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [pgn, setPgn] = useState('');
     const [fen, setFen] = useState('');
     const [error, setError] = useState('');
@@ -34,6 +36,11 @@ const Analysis = () => {
                 } catch (e) {
                     throw new Error('Invalid FEN format');
                 }
+            }
+
+            if (user?.isGuest) {
+                navigate('/analysis', { state: { pgn: type === 'pgn' ? pgn : null, fen: type === 'fen' ? fen : null } });
+                return;
             }
 
             const response = await axios.post(`${API_URL}/api/analysis/create`, {

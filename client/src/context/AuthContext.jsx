@@ -19,12 +19,24 @@ export const AuthProvider = ({ children }) => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     useEffect(() => {
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            fetchUser();
-        } else {
-            setLoading(false);
-        }
+        const checkAuth = async () => {
+            if (token) {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                await fetchUser();
+            } else {
+                const guestSession = localStorage.getItem('guest_session');
+                if (guestSession) {
+                    try {
+                        const guestUser = JSON.parse(guestSession);
+                        setUser(guestUser);
+                    } catch (e) {
+                        localStorage.removeItem('guest_session');
+                    }
+                }
+                setLoading(false);
+            }
+        };
+        checkAuth();
     }, [token]);
 
     const fetchUser = async () => {
@@ -45,11 +57,27 @@ export const AuthProvider = ({ children }) => {
             password
         });
         const { token: newToken, user: userData } = response.data;
+
+        localStorage.removeItem('guest_session');
+
         localStorage.setItem('token', newToken);
         setToken(newToken);
         setUser(userData);
         axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
         return response.data;
+    };
+
+    const loginAsGuest = () => {
+        const guestUser = {
+            _id: `guest_${Date.now()}`,
+            username: 'Guest',
+            isGuest: true,
+            rating: 800,
+            avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=Guest`
+        };
+
+        localStorage.setItem('guest_session', JSON.stringify(guestUser));
+        setUser(guestUser);
     };
 
     const register = async (username, email, password) => {
@@ -71,6 +99,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('guest_session');
         setToken(null);
         setUser(null);
         delete axios.defaults.headers.common['Authorization'];
@@ -81,6 +110,7 @@ export const AuthProvider = ({ children }) => {
         token,
         loading,
         login,
+        loginAsGuest,
         register,
         verify,
         logout,
