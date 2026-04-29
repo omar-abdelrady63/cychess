@@ -1,0 +1,644 @@
+/* ─── PlayAI.css ─────────────────────────────────────────────────────────── */
+
+/* ── Select Screen ──────────────────────────────────────────────────────── */
+.playai-select-screen {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 4rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.playai-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    width: 100%;
+    max-width: 800px;
+    position: relative;
+}
+
+.playai-back-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: transparent;
+    border: 1px solid var(--bg-tertiary);
+    color: var(--text-secondary);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+.playai-back-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.playai-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--accent), #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.playai-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    opacity: 0.8;
+}
+
+.playai-engine-error {
+    background: rgba(244, 63, 94, 0.1);
+    border: 1px solid #f43f5e55;
+    color: #f43f5e;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.playai-engine-loading {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Level Cards ─────────────────────────────────────────────────────────── */
+.playai-levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 2.5rem;
+}
+
+.playai-level-card {
+    position: relative;
+    background: var(--bg-secondary);
+    border: 2px solid var(--bg-tertiary);
+    border-radius: 20px;
+    padding: 1.6rem 1.2rem 1.4rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+}
+.playai-level-card:hover {
+    border-color: var(--lv-border);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 30px color-mix(in srgb, var(--lv-color) 20%, transparent);
+}
+.playai-level-card.selected {
+    border-color: var(--lv-border);
+    background: color-mix(in srgb, var(--lv-color) 8%, var(--bg-secondary));
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25), 0 0 25px color-mix(in srgb, var(--lv-color) 25%, transparent);
+}
+
+.playai-level-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, color-mix(in srgb, var(--lv-color) 12%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.playai-level-card:hover .playai-level-glow,
+.playai-level-card.selected .playai-level-glow { opacity: 1; }
+
+/* Character avatar in select card */
+.playai-level-avatar-wrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    background: var(--bg-primary);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.3rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    flex-shrink: 0;
+}
+.playai-level-card:hover .playai-level-avatar-wrap,
+.playai-level-card.selected .playai-level-avatar-wrap {
+    transform: scale(1.07);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--lv-color) 40%, transparent);
+}
+.playai-level-avatar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.playai-level-avatar svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.playai-level-name {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+/* Rating pill */
+.playai-level-rating {
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.85;
+}
+
+.playai-level-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--lv-color);
+    background: color-mix(in srgb, var(--lv-color) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--lv-color) 30%, transparent);
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+
+.playai-level-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    opacity: 0.8;
+    line-height: 1.4;
+}
+
+/* Sample quote on card */
+.playai-level-quote {
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 5px 8px;
+    background: rgba(0,0,0,0.15);
+    width: 100%;
+    text-align: left;
+    margin-top: 0.2rem;
+    opacity: 0.75;
+    line-height: 1.3;
+}
+
+.playai-level-check {
+    color: var(--lv-color);
+    font-size: 1.4rem;
+    margin-top: 0.2rem;
+}
+
+
+
+/* ── Color Selector ─────────────────────────────────────────────────────── */
+.playai-color-section {
+    text-align: center;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 400px;
+}
+.playai-color-section h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.playai-color-opts {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.playai-color-btn {
+    flex: 1;
+    max-width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 10px;
+    border-radius: 14px;
+    border: 2px solid var(--bg-tertiary);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.playai-color-btn:hover {
+    border-color: #ffffff33;
+    color: var(--text-primary);
+}
+.playai-color-btn.active {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, var(--bg-secondary));
+    color: var(--accent);
+}
+.playai-color-btn.color-white i { color: #f8fafc; text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+.playai-color-btn.color-black i { color: #1e293b; filter: drop-shadow(0 0 4px rgba(255,255,255,0.3)); }
+.playai-color-btn.color-random i { color: #a855f7; }
+
+/* ── Start Button ────────────────────────────────────────────────────────── */
+.playai-start-btn {
+    padding: 16px 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
+    transition: all 0.25s;
+    letter-spacing: 0.5px;
+}
+.playai-start-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 35px rgba(99, 102, 241, 0.5);
+}
+.playai-start-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ─── Game Screen ─────────────────────────────────────────────────────────── */
+.playai-game-container {
+    height: calc(100vh - 80px);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.playai-game-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1100px;
+}
+
+@media (min-width: 768px) {
+    .playai-game-grid {
+        display: grid;
+        grid-template-columns: 1fr 260px;
+        gap: 1.5rem;
+        align-items: center;
+        height: 100%;
+    }
+}
+
+/* ── Board Wrapper ───────────────────────────────────────────────────────── */
+.playai-board-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    /* Constrain to viewport height minus navbar (80px) and container padding (1.5rem each side) */
+    max-width: min(calc(100vh - 80px - 2.5rem - 130px), 560px);
+    margin: 0 auto;
+}
+
+.playai-board {
+    width: 100%;
+}
+
+/* ── Player Bar ─────────────────────────────────────────────────────────── */
+.playai-player-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.playai-player-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.playai-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+}
+.playai-avatar svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.playai-player-name {
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.playai-difficulty-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+}
+
+.playai-player-sub {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+/* ── Timer ──────────────────────────────────────────────────────────────── */
+.ai-timer {
+    padding: 6px 12px;
+    background: #333;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1rem;
+    min-width: 65px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+.ai-timer.active {
+    background: #4ade80;
+    color: #000;
+    box-shadow: 0 0 10px #4ade8066;
+}
+.ai-timer.low {
+    background: #ef4444;
+    color: #fff;
+    box-shadow: 0 0 10px #ef444466;
+    animation: pulse-timer 1s ease-in-out infinite;
+}
+@keyframes pulse-timer {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────────────── */
+.playai-sidebar {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: 14px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.playai-sidebar-level {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #fff;
+}
+.playai-sidebar-sublabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0.75;
+    margin-left: auto;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.playai-status-card {
+    background: var(--bg-primary);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+}
+
+.playai-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.playai-ctrl-btn {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.playai-ctrl-btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+/* ── Move List ──────────────────────────────────────────────────────────── */
+.playai-moves-section {
+    background: var(--bg-primary);
+    border-radius: 10px;
+    padding: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+.playai-moves-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+}
+.playai-moves-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+.playai-move-item {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.playai-move-item.white-move { background: rgba(255,255,255,0.05); }
+.playai-move-item.black-move { background: rgba(0,0,0,0.15); }
+.playai-move-num {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    min-width: 22px;
+}
+
+/* ── Result Modal ────────────────────────────────────────────────────────── */
+.playai-result-modal {
+    text-align: center;
+}
+.playai-result-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+.playai-result-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+.playai-result-stats {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+/* ── Shared modal styles (reuse from Game.css) ───────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+.modal-content {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 16px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+}
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.promotion-options {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+}
+.btn-promotion {
+    font-size: 2rem;
+    padding: 12px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.btn-promotion:hover { transform: scale(1.12); }
+
+/* ── In-game avatar wrap ─────────────────────────────────────────────────── */
+.playai-avatar-wrap {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+/* ── Speech Bubble ───────────────────────────────────────────────────────── */
+.playai-speech-bubble {
+    margin-top: 4px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: 1px solid;
+    background: rgba(0, 0, 0, 0.25);
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--text-primary);
+    max-width: 220px;
+    line-height: 1.3;
+    animation: bubble-in 0.25s ease-out;
+    position: relative;
+}
+.playai-speech-bubble::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 14px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid rgba(0, 0, 0, 0.25);
+}
+
+@keyframes bubble-in {
+    from { opacity: 0; transform: translateY(4px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+

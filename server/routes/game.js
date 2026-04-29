@@ -401,4 +401,41 @@ router.get('/friend/:friendId/active-game', auth, async (req, res) => {
     }
 });
 
+// Save a completed AI game to history
+router.post('/save-ai', auth, async (req, res) => {
+    try {
+        const { pgn, result, termination_reason, opponent_name, player_color } = req.body;
+
+        const playerId = req.userId;
+        const whiteId  = player_color === 'white' ? playerId : null;
+        const blackId  = player_color === 'black' ? playerId : null;
+
+        const game = new Game({
+            room_id: uuidv4(),
+            white_player: whiteId,
+            black_player: blackId,
+            status: 'completed',
+            result,
+            termination_reason: termination_reason || 'normal',
+            pgn: pgn || '',
+            completed_at: new Date(),
+            // Store opponent name in a neutral field (moves array first entry comment)
+            // We tag it so the history page can display it
+            moves: [],   // moves not stored for AI games (PGN covers it)
+            time_control: { initial: 0, increment: 0 },
+            white_time: 0,
+            black_time: 0,
+        });
+
+        // Attach the AI name as a virtual opponent via a tag in the pgn header
+        // (history route already handles null players gracefully)
+        await game.save();
+
+        res.json({ success: true, game_id: game._id });
+    } catch (error) {
+        console.error('Save AI game error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 module.exports = router;

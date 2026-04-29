@@ -19,6 +19,7 @@ import Themes from './pages/Themes';
 import TournamentLobby from './pages/TournamentLobby';
 import TournamentDashboard from './pages/TournamentDashboard';
 import PublicProfile from './pages/PublicProfile';
+import PlayAI from './pages/PlayAI';
 import PrivateRoute from './components/PrivateRoute';
 
 import ActiveGames from './pages/dashboard/ActiveGames';
@@ -34,7 +35,7 @@ function App() {
                     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                         <NotificationProvider>
                             <GameRejoinHandler />
-                            <div className="min-h-screen flex flex-col bg-primary text-text-primary transition-colors duration-200">
+                            <div className="min-h-screen flex flex-col bg-transparent text-text-primary transition-colors duration-200">
                                 <NotificationPopup />
                                 <Routes>
                                     <Route path="/" element={<><Navbar /><Landing /></>} />
@@ -54,6 +55,7 @@ function App() {
                                         <Route path="/profile/:username" element={<PublicProfile />} />
 
                                         <Route path="/game/:roomId" element={<Game />} />
+                                        <Route path="/play-ai" element={<PlayAI />} />
                                         <Route path="/analysis" element={<GameAnalysis />} />
                                         <Route path="/game/:gameId/analysis" element={<GameAnalysis />} />
 

@@ -110,7 +110,7 @@ const ProfileHeader = ({ user, friendStatus, onFriendAction }) => {
                                 #{user.discriminator}
                             </span>
                         </h1>
-                        <span className="bg-primary/50 text-accent px-3 py-1 rounded-full text-sm font-medium border border-accent/20 mx-auto md:mx-0">
+                        <span className="bg-background/50 text-accent px-3 py-1 rounded-full text-sm font-medium border border-accent/20 mx-auto md:mx-0">
                             {user.rating} Rating
                         </span>
                     </div>

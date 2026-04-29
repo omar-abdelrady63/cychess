@@ -1,64 +1,28 @@
 
 export const THEMES = {
-    ForestWhisper: {
-        name: 'Forest Whisper',
-        colors: ["#dad7cd", "#a3b18a", "#588157", "#3a5a40", "#344e41"]
+    neon: {
+        name: 'Light Green',
+        colors: ["#020617", "#1e293b", "#aff33e", "#f8fafc", "#94a3b8"]
     },
-    BlueHorizon: {
-        name: 'Blue Horizon',
-        colors: ["#03045e", "#023e8a", "#0077b6", "#0096c7", "#00b4d8", "#48cae4", "#90e0ef", "#ade8f4", "#caf0f8"]
+    blue: {
+        name: 'VTRON',
+        colors: ["#000000", "#0f0f0f", "#2b65ff", "#ffffff", "#d9d9d9"]
     },
-    DeepAtlantic: {
-        name: 'Deep Atlantic',
-        colors: ["#134074", "#13315c", "#0b2545", "#8da9c4", "#eef4ed"]
+    discord: {
+        name: 'Discord Theme',
+        colors: ["#323339", "#393a41", "#5865f2", "#ffffff", "#a4a5ab"]
     },
-    MysticPurple: {
-        name: 'Mystic Purple',
-        colors: ["#10002b", "#240046", "#3c096c", "#5a189a", "#7b2cbf", "#9d4edd", "#c77dff", "#e0aaff"]
+    amber: {
+        name: 'stella',
+        colors: ["#120e08", "#1d160c", "#ffc16b", "#fff4e5", "#b8a994"]
     },
-    RosyChill: {
-        name: 'Rosy Chill',
-        colors: ["#880d1e", "#dd2d4a", "#f26a8d", "#f49cbb", "#cbeef3"]
+    teal: {
+        name: 'Cigarette Butt',
+        colors: ["#0e1312", "#151b1a", "#6ea8a3", "#e9ecec", "#93a5a4"]
     },
-    GoldenNight: {
-        name: 'Golden Night',
-        colors: ["#000000", "#14213d", "#fca311", "#e5e5e5", "#ffffff"]
-    },
-    Sandalwood: {
-        name: 'Sandalwood',
-        colors: ["#ede0d4", "#e6ccb2", "#ddb892", "#b08968", "#7f5539", "#9c6644"]
-    },
-    AshToOnyx: {
-        name: 'Ash to Onyx',
-        colors: ["#f8f9fa", "#e9ecef", "#dee2e6", "#ced4da", "#adb5bd", "#6c757d", "#495057", "#343a40", "#212529"]
-    },
-    darkFantasy: {
-        name: 'Dark Fantasy',
-        colors: ["#0d0e14", "#252933", "#404556", "#60515c", "#777076", "#597d7c", "#386775", "#20504e", "#193d31", "#17292b"]
-    },
-    PassionFruit: {
-        name: 'Passion Fruit',
-        colors: ["#590d22", "#800f2f", "#a4133c", "#c9184a", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ffccd5", "#fff0f3"]
-    },
-    ElectricLime: {
-        name: 'Electric Lime',
-        colors: ["#007f5f", "#2b9348", "#55a630", "#80b918", "#aacc00", "#bfd200", "#d4d700", "#dddf00", "#eeef20", "#ffff3f"]
-    },
-    cryingObsidian: {
-        name: 'Crying Obsidian',
-        colors: ["#020109", "#03052E", "#140152", "#22007B", "#0D00A5"]
-    },
-    shadowTimber: {
-        name: 'Shadow Timber',
-        colors: ["#0d060f", "#1e2824", "#5d3c18", "#766b65", "#230000"]
-    },
-    volcanicAsh: {
-        name: 'Volcanic Ash',
-        colors: ["#181818", "#282828", "#404048", "#505860", "#66707a", "#381820", "#501820", "#502028"]
-    },
-    desertOasis: {
-        name: 'Desert Oasis',
-        colors: ["#2176ae", "#57b8ff", "#b66d0d", "#fbb13c", "#fe6847"]
+    cyberpunk: {
+        name: 'Cyberpunk',
+        colors: ["#120d1e", "#0c0128", "#00ff90", "#ff00af", "#e5e5e5"]
     }
 };
 
@@ -102,5 +66,5 @@ export const getThemeKeys = () => Object.keys(THEMES);
 export const getTheme = (key) => THEMES[key];
 
 export const migrateLegacyTheme = (oldKey) => {
-    return LEGACY_THEME_MAPPING[oldKey] || 'olive';
+    return 'neon';
 };

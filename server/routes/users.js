@@ -96,7 +96,7 @@ router.get('/:username/history', auth, async (req, res) => {
             .populate('black_player', 'username rating avatar');
 
         const history = games.map(game => {
-            const isWhite = game.white_player._id.toString() === user._id.toString();
+            const isWhite = game.white_player && game.white_player._id.toString() === user._id.toString();
             const playerColor = isWhite ? 'white' : 'black';
             const opponent = isWhite ? game.black_player : game.white_player;
 
@@ -119,7 +119,7 @@ router.get('/:username/history', auth, async (req, res) => {
                 result,
                 termination: game.termination_reason,
                 color: playerColor,
-                moves_count: Math.ceil(game.moves.length / 2)
+                moves_count: Math.ceil((game.moves || []).length / 2)
             };
         });
 

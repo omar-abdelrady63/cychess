@@ -33,21 +33,21 @@ const GameAnalysis = () => {
         const fetchGame = async () => {
 
             if (!gameId && location.state) {
-                const { pgn: customPgn, fen: customFen } = location.state;
+                const { pgn: customPgn, fen: customFen, white_player, black_player } = location.state;
 
                 if (customPgn) {
                     setPgn(customPgn);
 
                     setGame({
-                        white_player: { username: 'White' },
-                        black_player: { username: 'Black' }
+                        white_player: white_player || { username: 'White' },
+                        black_player: black_player || { username: 'Black' }
                     });
                 } else if (customFen) {
                     setFen(customFen);
 
                     setGame({
-                        white_player: { username: 'White' },
-                        black_player: { username: 'Black' }
+                        white_player: white_player || { username: 'White' },
+                        black_player: black_player || { username: 'Black' }
                     });
 
                 }
