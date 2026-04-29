@@ -1,18 +1,22 @@
 {
-    "name": "cychess-migration",
+    "name": "cychess-server",
     "version": "1.0.0",
-    "description": "User migration script for CyChess",
-    "main": "migrate_users.js",
+    "main": "server/server.js",
     "scripts": {
-        "migrate": "node migrate_users.js"
+        "start": "node server/server.js"
     },
     "dependencies": {
-        "autoprefixer": "^10.4.24",
         "bcryptjs": "^2.4.3",
+        "chess.js": "^1.0.0-beta.6",
+        "cors": "^2.8.6",
         "dotenv": "^16.4.1",
+        "express": "^4.18.2",
+        "express-validator": "^7.0.1",
+        "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.1.0",
-        "pg": "^8.11.3",
-        "postcss": "^8.5.6",
-        "tailwindcss": "^4.1.18"
+        "nodemailer": "^7.0.12",
+        "socket.io": "^4.6.1",
+        "stockfish": "^17.1.0",
+        "uuid": "^9.0.1"
     }
 }
